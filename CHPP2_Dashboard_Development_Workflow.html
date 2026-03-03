@@ -1,0 +1,2399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHPP2 Project Dashboard — Development Workflow</title>
+<style>
+  :root {
+    --primary: #1a3a5c;
+    --primary-light: #2563a8;
+    --accent: #e8861a;
+    --accent-light: #f5a742;
+    --success: #27864a;
+    --warning: #c9820a;
+    --danger: #b52e2e;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --font: 'Segoe UI', Arial, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--gray-100);
+    color: var(--gray-800);
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────── */
+  .doc-header {
+    background: linear-gradient(135deg, var(--primary) 0%, #0d2740 100%);
+    color: #fff;
+    padding: 40px 60px 36px;
+    border-bottom: 4px solid var(--accent);
+  }
+  .doc-header .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 3px;
+    margin-bottom: 14px;
+  }
+  .doc-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .doc-header h2 {
+    font-size: 15px;
+    font-weight: 400;
+    opacity: 0.75;
+    margin-bottom: 20px;
+  }
+  .doc-meta {
+    display: flex;
+    gap: 32px;
+    font-size: 13px;
+    opacity: 0.85;
+    flex-wrap: wrap;
+  }
+  .doc-meta span { display: flex; align-items: center; gap: 6px; }
+  .doc-meta strong { color: var(--accent-light); }
+
+  /* ── LAYOUT ──────────────────────────────────────────── */
+  .container { max-width: 1180px; margin: 0 auto; padding: 40px 40px 80px; }
+
+  /* ── TOC ─────────────────────────────────────────────── */
+  .toc {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-left: 5px solid var(--primary-light);
+    border-radius: 6px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .toc h3 { font-size: 14px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+  .toc ol { padding-left: 20px; columns: 2; gap: 20px; }
+  .toc li { font-size: 13.5px; margin-bottom: 6px; }
+  .toc a { color: var(--primary-light); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── SECTIONS ────────────────────────────────────────── */
+  .section { margin-bottom: 48px; }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+  .section-num {
+    width: 34px; height: 34px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .section-title h2 { font-size: 20px; font-weight: 700; color: var(--primary); }
+
+  /* ── CARDS ───────────────────────────────────────────── */
+  .card {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 22px 26px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .card h3 { font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+  .card p { font-size: 13.5px; color: var(--gray-700); margin-bottom: 8px; }
+  .card p:last-child { margin-bottom: 0; }
+
+  /* ── GRID ────────────────────────────────────────────── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media(max-width: 800px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* ── PHASE TIMELINE ─────────────────────────────────── */
+  .phase-timeline { display: flex; gap: 0; margin-bottom: 20px; overflow: hidden; border-radius: 8px; border: 1px solid var(--gray-200); }
+  .phase-block {
+    flex: 1;
+    padding: 14px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    color: #fff;
+    position: relative;
+  }
+  .phase-block:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left: 10px solid transparent;
+    border-top: 28px solid transparent;
+    border-bottom: 28px solid transparent;
+    z-index: 2;
+  }
+  .ph-1 { background: #1a3a5c; }
+  .ph-1::after { border-left-color: #1a3a5c; }
+  .ph-2 { background: #1e5491; }
+  .ph-2::after { border-left-color: #1e5491; }
+  .ph-3 { background: #2563a8; }
+  .ph-3::after { border-left-color: #2563a8; }
+  .ph-4 { background: #e8861a; }
+  .ph-4::after { border-left-color: #e8861a; }
+  .ph-5 { background: #27864a; }
+  .phase-block .label { font-size: 10px; opacity: 0.85; margin-top: 3px; font-weight: 400; }
+
+  /* ── ARCHITECTURE DIAGRAM ────────────────────────────── */
+  .arch-diagram { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 8px; padding: 30px; margin-bottom: 16px; }
+  .arch-layer { display: flex; gap: 12px; margin-bottom: 12px; align-items: stretch; }
+  .arch-label {
+    width: 120px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .arch-boxes { display: flex; gap: 10px; flex: 1; flex-wrap: wrap; }
+  .arch-box {
+    flex: 1;
+    min-width: 120px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    border: 2px solid transparent;
+  }
+  .box-blue { background: #dbeafe; border-color: #93c5fd; color: #1e40af; }
+  .box-green { background: #dcfce7; border-color: #86efac; color: #166534; }
+  .box-orange { background: #ffedd5; border-color: #fdba74; color: #9a3412; }
+  .box-purple { background: #ede9fe; border-color: #c4b5fd; color: #5b21b6; }
+  .box-gray { background: #f1f5f9; border-color: #cbd5e1; color: #475569; }
+  .box-dark { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .arch-arrow { display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--gray-300); }
+
+  /* ── DATA FLOW TABLE ─────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--primary); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; font-size: 12px; }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--gray-50); }
+  tr:hover td { background: #eff6ff; }
+
+  /* ── PILL TAGS ───────────────────────────────────────── */
+  .tag {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin: 2px;
+  }
+  .tag-blue { background: #dbeafe; color: #1e40af; }
+  .tag-green { background: #dcfce7; color: #166534; }
+  .tag-orange { background: #ffedd5; color: #9a3412; }
+  .tag-red { background: #fee2e2; color: #991b1b; }
+  .tag-purple { background: #ede9fe; color: #5b21b6; }
+
+  /* ── MODULE CARDS ────────────────────────────────────── */
+  .module-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media(max-width: 900px) { .module-grid { grid-template-columns: 1fr 1fr; } }
+  .module-card {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 16px 18px;
+    border-top: 3px solid var(--primary-light);
+  }
+  .module-card.accent { border-top-color: var(--accent); }
+  .module-card.success { border-top-color: var(--success); }
+  .module-card .mod-num { font-size: 11px; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .module-card h4 { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+  .module-card ul { padding-left: 16px; }
+  .module-card li { font-size: 12px; color: var(--gray-700); margin-bottom: 3px; }
+  .module-card .source { margin-top: 8px; font-size: 11px; color: var(--gray-600); font-style: italic; }
+
+  /* ── CHECKLIST ───────────────────────────────────────── */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--gray-100); font-size: 13.5px; }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist .icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+  .icon-check { background: #dcfce7; color: #166534; }
+  .icon-warn { background: #ffedd5; color: #9a3412; }
+  .icon-info { background: #dbeafe; color: #1e40af; }
+
+  /* ── SPRINT TABLE ────────────────────────────────────── */
+  .sprint-row td:first-child { font-weight: 700; color: var(--primary); white-space: nowrap; }
+
+  /* ── CALLOUT ─────────────────────────────────────────── */
+  .callout {
+    display: flex;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    font-size: 13.5px;
+  }
+  .callout-blue { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e3a5f; }
+  .callout-orange { background: #fff7ed; border-left: 4px solid var(--accent); color: #7c2d12; }
+  .callout-green { background: #f0fdf4; border-left: 4px solid var(--success); color: #14532d; }
+  .callout-icon { font-size: 20px; flex-shrink: 0; }
+
+  /* ── GANTT PREVIEW ───────────────────────────────────── */
+  .gantt-demo {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+  .gantt-toolbar {
+    background: var(--primary);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .gantt-toolbar .gtool {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .gantt-toolbar .gtool.active { background: var(--accent); border-color: var(--accent); }
+  .gantt-toolbar .gtool-sep { color: rgba(255,255,255,0.3); font-size: 16px; }
+  .gantt-body { display: flex; }
+  .gantt-left {
+    width: 320px;
+    flex-shrink: 0;
+    border-right: 2px solid var(--gray-200);
+  }
+  .gantt-right { flex: 1; overflow-x: auto; }
+  .gantt-header-row {
+    display: flex;
+    background: var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .gantt-col-wbs { width: 60px; padding: 8px 10px; border-right: 1px solid var(--gray-200); flex-shrink:0; }
+  .gantt-col-activity { flex: 1; padding: 8px 10px; border-right: 1px solid var(--gray-200); }
+  .gantt-col-pct { width: 50px; padding: 8px 6px; border-right: 1px solid var(--gray-200); text-align:center; flex-shrink:0; }
+  .gantt-col-resp { width: 80px; padding: 8px 6px; text-align:center; flex-shrink:0; }
+
+  .gantt-row {
+    display: flex;
+    border-bottom: 1px solid var(--gray-100);
+    align-items: center;
+    min-height: 38px;
+  }
+  .gantt-row:hover { background: #eff6ff; }
+  .gantt-row.group { background: #e8eef5; font-weight: 700; }
+  .gantt-row.group:hover { background: #dde6f0; }
+  .gantt-row.milestone-row { background: #fffbeb; }
+
+  .gantt-indent-0 { padding-left: 6px; }
+  .gantt-indent-1 { padding-left: 20px; }
+  .gantt-indent-2 { padding-left: 36px; }
+
+  /* Timeline header */
+  .gtl-header { display: flex; border-bottom: 1px solid var(--gray-200); background: var(--gray-50); }
+  .gtl-month {
+    flex: 1;
+    text-align: center;
+    padding: 5px 4px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--gray-600);
+    border-right: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .gtl-month.wetseason { background: #dbeafe; color: #1e40af; }
+
+  /* Gantt bars container */
+  .gtl-row {
+    display: flex;
+    align-items: center;
+    min-height: 38px;
+    position: relative;
+    border-bottom: 1px solid var(--gray-100);
+    padding: 3px 0;
+  }
+  .gtl-row:hover { background: rgba(59,130,246,0.04); }
+  .gtl-cell { flex: 1; border-right: 1px dashed var(--gray-200); min-height: 38px; position:relative; }
+
+  /* Dual bars */
+  .bar-wrap { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+  .bar-baseline {
+    position: absolute;
+    height: 10px;
+    top: 8px;
+    border-radius: 2px;
+    background: var(--gray-300);
+    opacity: 0.7;
+  }
+  .bar-actual {
+    position: absolute;
+    height: 10px;
+    top: 20px;
+    border-radius: 2px;
+    background: var(--success);
+  }
+  .bar-actual.delayed { background: var(--danger); }
+  .bar-actual.atrisk { background: var(--warning); }
+  .bar-actual.forecast { background: var(--primary-light); opacity: 0.7; border: 1px dashed var(--primary-light); }
+
+  /* Milestone diamond */
+  .milestone-diamond {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    transform: rotate(45deg);
+    top: 13px;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .milestone-diamond.achieved { background: var(--success); box-shadow: 0 0 0 1px var(--success); }
+  .milestone-diamond.critical { background: var(--danger); box-shadow: 0 0 0 1px var(--danger); }
+
+  /* Today line */
+  .today-line {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    z-index: 10;
+    pointer-events: none;
+  }
+  .today-label {
+    position: absolute;
+    top: -18px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  /* Wet season band */
+  .wetseason-band {
+    position: absolute;
+    top: 0; bottom: 0;
+    background: rgba(59,130,246,0.06);
+    border-left: 1px dashed #93c5fd;
+    border-right: 1px dashed #93c5fd;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Legend */
+  .gantt-legend {
+    display: flex;
+    gap: 20px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--gray-200);
+    background: var(--gray-50);
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--gray-700); }
+  .legend-bar {
+    width: 28px; height: 9px; border-radius: 2px;
+  }
+  .legend-diamond {
+    width: 10px; height: 10px;
+    transform: rotate(45deg);
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* Gantt feature table */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  @media(max-width: 700px) { .feature-grid { grid-template-columns: 1fr; } }
+  .feature-block {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 16px 18px;
+    border-left: 4px solid var(--primary-light);
+  }
+  .feature-block.orange { border-left-color: var(--accent); }
+  .feature-block.green { border-left-color: var(--success); }
+  .feature-block.purple { border-left-color: #7c3aed; }
+  .feature-block h4 { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+  .feature-block ul { padding-left: 16px; }
+  .feature-block li { font-size: 12px; color: var(--gray-700); margin-bottom: 3px; }
+
+  /* ── GANTT CHART MODULE STYLES ───────────────────────── */
+  .gantt-section {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .gantt-toolbar {
+    background: var(--gray-800);
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .gantt-toolbar .g-label {
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+  .g-btn {
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    border-radius: 4px;
+    padding: 4px 11px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .g-btn.active, .g-btn:hover { background: var(--primary-light); border-color: var(--primary-light); color: #fff; }
+  .g-btn.accent-btn { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .g-sep { width: 1px; height: 22px; background: #475569; margin: 0 4px; }
+
+  .gantt-wrapper { display: flex; overflow: hidden; }
+
+  /* Left panel — task list */
+  .gantt-tasks {
+    min-width: 320px;
+    width: 320px;
+    border-right: 2px solid var(--gray-200);
+    flex-shrink: 0;
+  }
+  .gantt-tasks-header {
+    display: grid;
+    grid-template-columns: 28px 1fr 70px 70px;
+    gap: 0;
+    background: var(--primary);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 7px 10px;
+    letter-spacing: 0.5px;
+  }
+  .gantt-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 70px 70px;
+    gap: 0;
+    padding: 0 10px;
+    border-bottom: 1px solid var(--gray-100);
+    align-items: center;
+    min-height: 34px;
+    font-size: 12px;
+    transition: background 0.1s;
+  }
+  .gantt-row:hover { background: #eff6ff; }
+  .gantt-row.group { background: #f0f4f8; font-weight: 700; font-size: 11.5px; color: var(--primary); }
+  .gantt-row.milestone-row { background: #fff9f0; }
+  .gantt-row.completed { color: var(--success); }
+  .gantt-row.delayed { color: var(--danger); }
+  .expand-icon { color: var(--gray-600); font-size: 10px; cursor: pointer; }
+  .task-indent { padding-left: 16px; }
+  .task-indent2 { padding-left: 28px; }
+  .task-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; }
+  .date-cell { font-size: 11px; color: var(--gray-600); text-align: center; }
+
+  /* Right panel — bars */
+  .gantt-chart-area {
+    flex: 1;
+    overflow-x: auto;
+    position: relative;
+  }
+  .gantt-time-header {
+    display: flex;
+    background: var(--primary);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    border-bottom: 2px solid var(--gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .month-col {
+    flex-shrink: 0;
+    text-align: center;
+    padding: 4px 2px;
+    border-right: 1px solid #2d5a8e;
+    font-size: 10px;
+  }
+  .gantt-body { position: relative; }
+  .gantt-bar-row {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    border-bottom: 1px solid var(--gray-100);
+    position: relative;
+  }
+  .gantt-bar-row:hover { background: rgba(37,99,168,0.04); }
+  .gantt-bar-row.group { background: rgba(240,244,248,0.6); }
+  .gantt-bar-row.milestone-row { background: rgba(255,249,240,0.6); }
+  .bar-cell {
+    position: relative;
+    height: 34px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* The actual bars */
+  .bar-baseline {
+    position: absolute;
+    height: 8px;
+    border-radius: 2px;
+    background: #94a3b8;
+    opacity: 0.55;
+    bottom: 8px;
+  }
+  .bar-actual {
+    position: absolute;
+    height: 14px;
+    border-radius: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .bar-planned { background: linear-gradient(90deg, #2563a8, #3b82f6); }
+  .bar-inprogress { background: linear-gradient(90deg, #d97706, #f59e0b); }
+  .bar-done { background: linear-gradient(90deg, #15803d, #22c55e); }
+  .bar-delayed { background: linear-gradient(90deg, #b91c1c, #ef4444); }
+  .bar-forecast {
+    background: repeating-linear-gradient(
+      90deg,
+      #7c3aed 0px,
+      #7c3aed 6px,
+      transparent 6px,
+      transparent 10px
+    );
+    border: 2px solid #7c3aed;
+    border-radius: 3px;
+  }
+
+  /* Milestone diamond */
+  .milestone-diamond {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    transform: rotate(45deg);
+    top: 50%;
+    margin-top: -6px;
+    border: 2px solid #b45309;
+    z-index: 3;
+  }
+  .milestone-diamond.done { background: var(--success); border-color: #14532d; }
+  .milestone-diamond.late { background: var(--danger); border-color: #7f1d1d; }
+
+  /* Today line */
+  .today-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #ef4444;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .today-label {
+    position: absolute;
+    top: 2px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 2px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 21;
+  }
+
+  /* Wet season shading */
+  .wet-season-band {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: rgba(59,130,246,0.07);
+    border-left: 2px dashed rgba(59,130,246,0.3);
+    border-right: 2px dashed rgba(59,130,246,0.3);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .wet-season-label {
+    position: absolute;
+    top: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #2563a8;
+    opacity: 0.7;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  /* Grid lines */
+  .v-gridline {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--gray-200);
+    z-index: 0;
+  }
+
+  /* Legend */
+  .gantt-legend {
+    padding: 12px 18px;
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--gray-700); }
+  .legend-bar { height: 10px; width: 30px; border-radius: 2px; }
+  .legend-baseline { height: 6px; width: 30px; background: #94a3b8; border-radius: 2px; opacity: 0.6; }
+  .legend-diamond { width: 10px; height: 10px; background: var(--accent); transform: rotate(45deg); border: 2px solid #b45309; }
+  .legend-today { width: 3px; height: 16px; background: #ef4444; border-radius: 1px; }
+  .legend-wet { width: 20px; height: 16px; background: rgba(59,130,246,0.1); border: 1px dashed rgba(59,130,246,0.4); border-radius: 2px; }
+
+  /* Feature spec boxes */
+  .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  .spec-box { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px 18px; }
+  .spec-box h4 { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 7px; }
+  .spec-box ul { padding-left: 16px; }
+  .spec-box li { font-size: 12.5px; color: var(--gray-700); margin-bottom: 3px; }
+
+  /* ── FOOTER ──────────────────────────────────────────── */
+  .doc-footer {
+    background: var(--gray-800);
+    color: var(--gray-300);
+    text-align: center;
+    padding: 22px;
+    font-size: 12px;
+  }
+  .doc-footer strong { color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════ -->
+<div class="doc-header">
+  <div class="badge">Technical Workflow Document</div>
+  <h1>CHPP2 Project Dashboard — Development Workflow</h1>
+  <h2>PT Maruwai Coal (Adaro Group) · Lampunut Mine, Central Kalimantan · EPC Value USD 89.2M</h2>
+  <div class="doc-meta">
+    <span><strong>Document No.:</strong> CHPP2-DASH-WF-001</span>
+    <span><strong>Rev:</strong> A</span>
+    <span><strong>Date:</strong> March 2026</span>
+    <span><strong>Author:</strong> Project Controls — Employer (PT Maruwai Coal)</span>
+    <span><strong>Status:</strong> <span class="tag tag-orange">For Review</span></span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     BODY
+═══════════════════════════════════════════ -->
+<div class="container">
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">Executive Summary & Objectives</a></li>
+      <li><a href="#s2">Governance Model & Parties</a></li>
+      <li><a href="#s3">Technical Architecture</a></li>
+      <li><a href="#s4">Data Layer — Excel/Google Sheets Design</a></li>
+      <li><a href="#s5">Dashboard Modules Definition</a></li>
+      <li><a href="#s5a">Module 13 — Gantt Chart Specification</a></li>
+      <li><a href="#s6">Development Phases & Sprint Plan</a></li>
+      <li><a href="#s7">Technology Stack & Tooling</a></li>
+      <li><a href="#s8">Data Flow & Integration</a></li>
+      <li><a href="#s9">Access Control & Collaboration</a></li>
+      <li><a href="#s10">Risks, Constraints & Mitigations</a></li>
+      <li><a href="#s11">Acceptance Criteria & KPIs</a></li>
+      <li><a href="#s12">Appendix — Recommended Additional Modules</a></li>
+      <li><a href="#s13">Module 13 — Gantt Chart: Baseline vs Actual Schedule</a></li>
+    </ol>
+  </div>
+
+  <!-- ═══ SECTION 1 ══════════════════════════════════════ -->
+  <div class="section" id="s1">
+    <div class="section-title">
+      <div class="section-num">1</div>
+      <h2>Executive Summary & Objectives</h2>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">ℹ️</span>
+      <div>This document defines the complete end-to-end development workflow for the <strong>CHPP2 Project Dashboard</strong>, a web-based reporting and tracking platform for PT Maruwai Coal as the <strong>Employer</strong>. The dashboard consolidates all contractual, commercial, schedule, risk, and document control data across three governed parties: the <strong>Project Management Consultant / Employer's Engineer (PMC/EE)</strong>, the <strong>EP Contractor</strong>, and the <strong>Construction Contractor</strong>.</div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>🎯 Primary Objectives</h3>
+        <p>Provide the Employer with a single-pane-of-glass view of all project activities, giving real-time visibility into progress, commercial exposure, risk profile, and vendor performance against the USD 89.2M EPC programme.</p>
+        <p>Enable structured exception management — surface problems early before they cascade into schedule or cost overruns in the remote Central Kalimantan environment.</p>
+      </div>
+      <div class="card">
+        <h3>📐 Design Principles</h3>
+        <p><strong>Employer-centric:</strong> All KPIs, alerts, and workflows reflect the Employer's obligations and rights under the split EP + Construction contract structure.</p>
+        <p><strong>Excel/Sheets-native data:</strong> Zero new database infrastructure — all source data lives in structured Excel/Google Sheets that field teams already maintain via Microsoft Teams.</p>
+        <p><strong>Progressive disclosure:</strong> Executive summary on landing page; drill-down to individual line items on demand.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 2 ══════════════════════════════════════ -->
+  <div class="section" id="s2">
+    <div class="section-title">
+      <div class="section-num">2</div>
+      <h2>Governance Model & Parties Monitored</h2>
+    </div>
+
+    <div class="card">
+      <h3>Contractual Hierarchy — Employer's View</h3>
+      <div class="arch-diagram" style="padding:20px;">
+        <!-- Employer -->
+        <div class="arch-layer">
+          <div class="arch-label">Employer</div>
+          <div class="arch-boxes">
+            <div class="arch-box box-dark" style="flex:0 0 auto; min-width:220px;">
+              🏢 PT Maruwai Coal (Adaro Group)<br>
+              <span style="font-size:10px;opacity:0.8;font-weight:400;">Dashboard Owner · Decision Authority</span>
+            </div>
+          </div>
+        </div>
+        <div class="arch-layer" style="margin-left:132px; margin-top:-4px;">
+          <div class="arch-boxes" style="gap:4px;">
+            <span style="font-size:20px;color:#94a3b8;">├──</span>
+            <span style="font-size:20px;color:#94a3b8;">├──</span>
+            <span style="font-size:20px;color:#94a3b8;">└──</span>
+          </div>
+        </div>
+        <!-- Three parties -->
+        <div class="arch-layer">
+          <div class="arch-label">Governed<br>Parties</div>
+          <div class="arch-boxes">
+            <div class="arch-box box-blue" style="text-align:left;">
+              <strong>PMC / Employer's Engineer</strong><br>
+              <span style="font-size:11px;">· Independent oversight<br>· Document approval authority<br>· Payment certification<br>· Variation assessment</span>
+            </div>
+            <div class="arch-box box-orange" style="text-align:left;">
+              <strong>EP Contractor</strong><br>
+              <span style="font-size:11px;">· Basic &amp; Detailed Engineering<br>· Major Equipment Procurement<br>· Logistics &amp; Delivery<br>· Field Supervision &amp; Commissioning</span>
+            </div>
+            <div class="arch-box box-green" style="text-align:left;">
+              <strong>Construction Contractor</strong><br>
+              <span style="font-size:11px;">· Civil &amp; Structural Works<br>· Mechanical/Electrical Installation<br>· Piping &amp; Instrumentation<br>· Pre-commissioning support</span>
+            </div>
+          </div>
+        </div>
+        <!-- Interfaces -->
+        <div class="arch-layer" style="margin-top:10px;">
+          <div class="arch-label">Key<br>Interfaces</div>
+          <div class="arch-boxes">
+            <div class="arch-box box-purple" style="font-size:11px;">Shop Drawing Review Loop<br><em>EP ↔ CC via Employer's Engineer</em></div>
+            <div class="arch-box box-purple" style="font-size:11px;">Equipment Delivery to Site<br><em>EP Contractor → CC Contractor</em></div>
+            <div class="arch-box box-purple" style="font-size:11px;">Commissioning Handover<br><em>EP Contractor → Employer</em></div>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>Party</th><th>Dashboard Role</th><th>Data Input Responsibility</th><th>View Level</th></tr></thead>
+        <tbody>
+          <tr><td><strong>PT Maruwai Coal</strong></td><td>Dashboard Owner, all-access</td><td>Baseline schedule, budget, approved milestones</td><td>Full — all modules</td></tr>
+          <tr><td><strong>PMC / Employer's Engineer</strong></td><td>Data verifier, recommender</td><td>Document register, payment certs, variation assessments</td><td>Full — read + limited write</td></tr>
+          <tr><td><strong>EP Contractor</strong></td><td>Reporting party</td><td>Engineering progress, procurement status, S-curve actuals</td><td>Own modules only</td></tr>
+          <tr><td><strong>Construction Contractor</strong></td><td>Reporting party</td><td>Construction progress, site issues, manpower reports</td><td>Own modules only</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 3 ══════════════════════════════════════ -->
+  <div class="section" id="s3">
+    <div class="section-title">
+      <div class="section-num">3</div>
+      <h2>Technical Architecture</h2>
+    </div>
+
+    <div class="arch-diagram">
+      <div style="text-align:center;font-size:12px;font-weight:700;color:var(--gray-600);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">3-Layer Architecture</div>
+
+      <!-- Data Layer -->
+      <div class="arch-layer">
+        <div class="arch-label">DATA LAYER</div>
+        <div class="arch-boxes">
+          <div class="arch-box box-blue">📊 Excel Workbooks<br><span style="font-size:11px;">Stored on SharePoint / Teams</span></div>
+          <div class="arch-box box-blue">📊 Google Sheets<br><span style="font-size:11px;">Collaborative real-time edit</span></div>
+          <div class="arch-box box-blue">📁 Project Documents<br><span style="font-size:11px;">SharePoint Document Library</span></div>
+        </div>
+      </div>
+
+      <div class="arch-arrow" style="justify-content:flex-start;padding-left:132px;font-size:14px;color:var(--gray-600);margin:4px 0;">▼ Sync via API / Script (scheduled or on-demand)</div>
+
+      <!-- Processing Layer -->
+      <div class="arch-layer">
+        <div class="arch-label">PROCESSING LAYER</div>
+        <div class="arch-boxes">
+          <div class="arch-box box-purple">⚙️ Data Parser &amp; Normalizer<br><span style="font-size:11px;">Python / Node.js ETL</span></div>
+          <div class="arch-box box-purple">🔗 Google Sheets API<br><span style="font-size:11px;">Live read/write connector</span></div>
+          <div class="arch-box box-purple">📐 Computation Engine<br><span style="font-size:11px;">S-curve, variance, weighted %</span></div>
+          <div class="arch-box box-purple">🔔 Alert Engine<br><span style="font-size:11px;">Threshold-based notifications</span></div>
+        </div>
+      </div>
+
+      <div class="arch-arrow" style="justify-content:flex-start;padding-left:132px;font-size:14px;color:var(--gray-600);margin:4px 0;">▼ REST API / JSON</div>
+
+      <!-- Presentation Layer -->
+      <div class="arch-layer">
+        <div class="arch-label">PRESENTATION LAYER</div>
+        <div class="arch-boxes">
+          <div class="arch-box box-green">🖥️ Web Dashboard<br><span style="font-size:11px;">React / Next.js SPA</span></div>
+          <div class="arch-box box-green">📱 Mobile-Responsive UI<br><span style="font-size:11px;">Tailwind CSS</span></div>
+          <div class="arch-box box-green">📤 PDF/Excel Export<br><span style="font-size:11px;">Weekly report generation</span></div>
+        </div>
+      </div>
+
+      <div class="arch-arrow" style="justify-content:flex-start;padding-left:132px;font-size:14px;color:var(--gray-600);margin:4px 0;">▼ HTTPS / Role-based Auth</div>
+
+      <!-- Users -->
+      <div class="arch-layer">
+        <div class="arch-label">USERS</div>
+        <div class="arch-boxes">
+          <div class="arch-box box-dark">Employer (Admin)</div>
+          <div class="arch-box box-orange">PMC / EE</div>
+          <div class="arch-box box-orange">EP Contractor</div>
+          <div class="arch-box box-orange">Construction Contractor</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-orange">
+      <span class="callout-icon">⚠️</span>
+      <div><strong>Deployment Consideration:</strong> Given the remote site location near Tumbang Baloi with limited connectivity, the dashboard must function with <strong>offline data snapshots</strong> (last-synced cache) and auto-sync when connection is restored. Avoid real-time-only architectures.</div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 4 ══════════════════════════════════════ -->
+  <div class="section" id="s4">
+    <div class="section-title">
+      <div class="section-num">4</div>
+      <h2>Data Layer — Excel / Google Sheets Design</h2>
+    </div>
+
+    <div class="callout callout-green">
+      <span class="callout-icon">✅</span>
+      <div><strong>Philosophy:</strong> Each dashboard module maps 1:1 to one Master Workbook (tab/sheet). Teams update their sheet → dashboard reads it. No double-entry. Data stewards own their sheets with locked structure, free content cells.</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th style="width:5%">#</th><th style="width:22%">Workbook / Sheet Name</th><th style="width:18%">Owner</th><th style="width:25%">Key Columns</th><th style="width:18%">Update Frequency</th><th style="width:12%">Platform</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><strong>MASTER_Schedule_WBS</strong></td><td>PMC / EP Contractor</td><td>WBS ID, Activity, Baseline Start/Finish, Actual Start/Finish, % Complete, Planned Value (PV), Earned Value (EV), Weight</td><td>Weekly (Friday)</td><td><span class="tag tag-green">Google Sheets</span></td></tr>
+        <tr><td>2</td><td><strong>MASTER_Milestones</strong></td><td>Employer</td><td>Milestone ID, Description, Party Responsible, Planned Date, Forecast Date, Actual Date, Status, Remarks</td><td>On event</td><td><span class="tag tag-green">Google Sheets</span></td></tr>
+        <tr><td>3</td><td><strong>EMPLOYER_VendorProcurement</strong></td><td>PMC/Employer</td><td>Package ID, Description, Value, Tender Issue, Submission, Evaluation, Award, Party, Status</td><td>Bi-weekly</td><td><span class="tag tag-blue">Excel/SharePoint</span></td></tr>
+        <tr><td>4</td><td><strong>MDR_DocumentRegister</strong></td><td>PMC (Document Controller)</td><td>Doc No., Title, Discipline, Revision, Originator, Planned Issue, Actual Issue, Status, Comment Turnaround</td><td>Weekly</td><td><span class="tag tag-green">Google Sheets</span></td></tr>
+        <tr><td>5</td><td><strong>EP_ProcurementMasterlist</strong></td><td>EP Contractor (reported by PMC)</td><td>Equipment Tag, Description, Vendor, PO No., PO Value (USD), Delivery Date Planned, Actual/Forecast, TKDN %, Inspection Status</td><td>Bi-weekly</td><td><span class="tag tag-green">Google Sheets</span></td></tr>
+        <tr><td>6</td><td><strong>RISK_IssueRegister</strong></td><td>PMC / All Parties</td><td>ID, Category, Description, Probability, Impact, Score, Owner, Status, Mitigation, Due Date, Residual Risk</td><td>Monthly (or on event)</td><td><span class="tag tag-green">Google Sheets</span></td></tr>
+        <tr><td>7</td><td><strong>VO_ChangeLog</strong></td><td>PMC / Commercial</td><td>VO No., Description, Submitted By, Date Submitted, Status, Impact (Time/Cost), Approved Value, Pending/Approved</td><td>On event</td><td><span class="tag tag-blue">Excel/SharePoint</span></td></tr>
+        <tr><td>8</td><td><strong>COMMERCIAL_PaymentCerts</strong></td><td>PMC / Finance</td><td>Cert No., Contract, Period, Submitted Amount, Certified Amount, Payment Due Date, Actual Payment Date, Cumulative Certified, Retention Held</td><td>Monthly</td><td><span class="tag tag-blue">Excel/SharePoint</span></td></tr>
+        <tr><td>9</td><td><strong>HSE_Statistics</strong></td><td>PMC / HSE Officer</td><td>Week, Manhours Worked, LTI, TRIR, Near Misses, Observations, Safety Alerts</td><td>Weekly</td><td><span class="tag tag-green">Google Sheets</span></td></tr>
+        <tr><td>10</td><td><strong>QUALITY_NCR_Register</strong></td><td>PMC / Quality</td><td>NCR No., Date, Discipline, Description, Party Responsible, Status, Close-out Date</td><td>On event</td><td><span class="tag tag-green">Google Sheets</span></td></tr>
+        <tr><td>11</td><td><strong>LOGISTICS_Tracker</strong></td><td>EP Contractor (via PMC)</td><td>Shipment ID, Equipment, Origin, Departure, Port/Vessel, Estimated Arrival Barito, Site Delivery, Status, Risk Flag</td><td>Weekly</td><td><span class="tag tag-green">Google Sheets</span></td></tr>
+        <tr><td>12</td><td><strong>MANPOWER_Report</strong></td><td>Construction Contractor / EP</td><td>Party, Week, Discipline, Planned Headcount, Actual, Peak Requirement, Productivity Index</td><td>Weekly</td><td><span class="tag tag-green">Google Sheets</span></td></tr>
+        <tr style="background:#fffbeb;"><td><strong>13</strong></td><td><strong>GANTT_Schedule_Master</strong> <span class="tag tag-orange" style="font-size:10px;">New</span></td><td>PMC / EP Contractor</td><td>WBS ID, WBS Level (1–4), Activity Name, Phase, Discipline, Party, Baseline Start, Baseline Finish, Actual Start, Actual/Forecast Finish, % Complete, Is Milestone (Y/N), Critical Path (Y/N), Predecessor IDs, Float (days), Bar Colour Override, Remarks</td><td>Weekly (Monday)</td><td><span class="tag tag-green">Google Sheets</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="card" style="margin-top:16px;">
+      <h3>Naming Convention & Version Control</h3>
+      <p>All sheets follow the pattern: <code style="background:#f1f5f9;padding:2px 6px;border-radius:3px;font-size:13px;">[CATEGORY]_[Module]_Rev[X]_[YYYYMMDD]</code>. A <strong>Master Index Sheet</strong> in each workbook records revision history. Never rename columns — dashboard reads by column name, not position.</p>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 5 ══════════════════════════════════════ -->
+  <div class="section" id="s5">
+    <div class="section-title">
+      <div class="section-num">5</div>
+      <h2>Dashboard Modules Definition</h2>
+    </div>
+
+    <div class="module-grid">
+
+      <div class="module-card">
+        <div class="mod-num">Module 01</div>
+        <h4>📈 Progress Tracking (S-Curve)</h4>
+        <ul>
+          <li>Overall project S-curve: Planned vs Actual vs Forecast</li>
+          <li>Separate S-curves: EP Contract & Construction Contract</li>
+          <li>Earned Value Metrics: SPI, CPI, EAC, ETC</li>
+          <li>Discipline-level progress breakdown</li>
+          <li>Weekly variance trend with narrative</li>
+        </ul>
+        <div class="source">Data source: MASTER_Schedule_WBS</div>
+      </div>
+
+      <div class="module-card accent">
+        <div class="mod-num">Module 02</div>
+        <h4>🏁 Key Milestone Tracker</h4>
+        <ul>
+          <li>Traffic-light status per milestone</li>
+          <li>Baseline vs Forecast vs Actual dates</li>
+          <li>Critical path milestones highlighted</li>
+          <li>CHPP2A vs CHPP2B separate tracks</li>
+          <li>Calendar view with wet-season overlay</li>
+          <li>Countdown to next critical milestone</li>
+        </ul>
+        <div class="source">Data source: MASTER_Milestones</div>
+      </div>
+
+      <div class="module-card">
+        <div class="mod-num">Module 03</div>
+        <h4>🏢 Employer's Vendor/Contractor Procurement</h4>
+        <ul>
+          <li>Procurement pipeline Gantt (tender→award)</li>
+          <li>Status per package: Open/Under Eval/Awarded/On Hold</li>
+          <li>Contract value summary vs budget</li>
+          <li>TKDN compliance flag per package</li>
+          <li>Upcoming bid closing date alerts</li>
+        </ul>
+        <div class="source">Data source: EMPLOYER_VendorProcurement</div>
+      </div>
+
+      <div class="module-card">
+        <div class="mod-num">Module 04</div>
+        <h4>📂 Master Document Register (MDR)</h4>
+        <ul>
+          <li>Documents by discipline & status (IFA/IFC/AFC)</li>
+          <li>Overdue submissions flagged red</li>
+          <li>Comment turnaround tracking vs SLA</li>
+          <li>Revision history log</li>
+          <li>Searchable & filterable table</li>
+          <li>% documents approved by discipline</li>
+        </ul>
+        <div class="source">Data source: MDR_DocumentRegister</div>
+      </div>
+
+      <div class="module-card accent">
+        <div class="mod-num">Module 05</div>
+        <h4>🔧 EP Procurement & Masterlist Tracker</h4>
+        <ul>
+          <li>Equipment masterlist with PO status per tag</li>
+          <li>Value committed vs total EP contract value</li>
+          <li>Delivery timeline vs wet season risk window</li>
+          <li>TKDN % per line item vs minimum requirement</li>
+          <li>Inspection status (FAT/Pre-delivery)</li>
+          <li>Chinese supplier risk flags</li>
+        </ul>
+        <div class="source">Data source: EP_ProcurementMasterlist</div>
+      </div>
+
+      <div class="module-card success">
+        <div class="mod-num">Module 06</div>
+        <h4>⚠️ Risk & Issues Register</h4>
+        <ul>
+          <li>Risk heat map (Probability × Impact matrix)</li>
+          <li>Top 10 risks with owner & mitigation status</li>
+          <li>Issues log with escalation status</li>
+          <li>Trend: risks opened/closed per month</li>
+          <li>Risk score distribution by category</li>
+        </ul>
+        <div class="source">Data source: RISK_IssueRegister</div>
+      </div>
+
+      <div class="module-card">
+        <div class="mod-num">Module 07</div>
+        <h4>🔄 Variation Order / Change Request Log</h4>
+        <ul>
+          <li>VO pipeline: Submitted → Under Review → Approved/Rejected</li>
+          <li>Cumulative cost & time impact of VOs</li>
+          <li>VO aging — days under review</li>
+          <li>Approved vs Budget exposure chart</li>
+          <li>VO origin breakdown (Employer/Contractor initiated)</li>
+        </ul>
+        <div class="source">Data source: VO_ChangeLog</div>
+      </div>
+
+      <div class="module-card accent">
+        <div class="mod-num">Module 08</div>
+        <h4>💰 Commercial & Payment Certificate Tracker</h4>
+        <ul>
+          <li>Payment certificate timeline & status per contract</li>
+          <li>Cumulative certified vs contract value (burn curve)</li>
+          <li>Retention tracking — accrued & released</li>
+          <li>Days overdue on outstanding payments</li>
+          <li>Cash-flow forecast chart</li>
+          <li>CLSTK Phase 1→2 conversion cost exposure</li>
+        </ul>
+        <div class="source">Data source: COMMERCIAL_PaymentCerts</div>
+      </div>
+
+      <div class="module-card success">
+        <div class="mod-num">Module 09 (Additional)</div>
+        <h4>🛡️ HSE Performance Dashboard</h4>
+        <ul>
+          <li>LTI-free days counter</li>
+          <li>TRIR, LTIFR trending charts</li>
+          <li>Weekly safety observations rate</li>
+          <li>Open/closed safety actions</li>
+        </ul>
+        <div class="source">Data source: HSE_Statistics</div>
+      </div>
+
+      <div class="module-card">
+        <div class="mod-num">Module 10 (Additional)</div>
+        <h4>🚢 Logistics & Delivery Tracker</h4>
+        <ul>
+          <li>Shipment map (origin → Barito River → site)</li>
+          <li>Wet season delivery risk calendar overlay</li>
+          <li>Days to delivery vs site readiness</li>
+          <li>Critical long-lead equipment ETAs</li>
+        </ul>
+        <div class="source">Data source: LOGISTICS_Tracker</div>
+      </div>
+
+      <div class="module-card">
+        <div class="mod-num">Module 11 (Additional)</div>
+        <h4>✅ Quality — NCR / Inspection Tracker</h4>
+        <ul>
+          <li>Open NCR count by party & discipline</li>
+          <li>NCR aging — days open</li>
+          <li>Factory inspection status (FAT/site)</li>
+          <li>Close-out trend month-on-month</li>
+        </ul>
+        <div class="source">Data source: QUALITY_NCR_Register</div>
+      </div>
+
+      <div class="module-card success">
+        <div class="mod-num">Module 12 (Additional)</div>
+        <h4>👷 Manpower & Resource Tracker</h4>
+        <ul>
+          <li>Actual vs planned headcount per party</li>
+          <li>Peak demand projection vs current mobilization</li>
+          <li>Key personnel roster & deployment status</li>
+          <li>Local vs expatriate ratio (TKDN manpower)</li>
+        </ul>
+        <div class="source">Data source: MANPOWER_Report</div>
+      </div>
+
+      <div class="module-card accent" style="grid-column: 1 / -1; border-top: 3px solid var(--primary); background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);">
+        <div class="mod-num" style="color:var(--primary);">Module 13 — FEATURED</div>
+        <h4 style="font-size:16px; color:var(--primary);">📅 Interactive Gantt Chart — Baseline vs Actual Schedule</h4>
+        <p style="font-size:12.5px; color:var(--gray-700); margin-bottom:10px;">Full-featured dual-bar interactive Gantt chart rendering the project master schedule from <code style="background:#e8eef5; padding:1px 5px; border-radius:3px;">GANTT_Schedule_Master</code> sheet. Displays baseline bars alongside actual/forecast bars, milestone diamonds, critical path, dependency links, and a live "today" reference line — with wet season risk bands overlaid on the timeline. See dedicated Section 5A below for full specification.</p>
+        <ul style="columns:2; gap:20px;">
+          <li>Dual-row bars: Baseline (grey) + Actual/Forecast (colour-coded)</li>
+          <li>Collapsible WBS hierarchy up to 4 levels deep</li>
+          <li>Milestone diamonds (◆) with achieved/pending/critical states</li>
+          <li>Critical path highlighting in red</li>
+          <li>Dependency arrows (FS, SS, FF, SF) with lag display</li>
+          <li>Live "Today" vertical line with date label</li>
+          <li>Wet season band (Dec–Feb) overlaid on timeline</li>
+          <li>Time-scale toggle: Weekly / Monthly / Quarterly / Yearly</li>
+          <li>Filter panel: Party, Discipline, Phase, WBS Level, Status</li>
+          <li>% complete progress fill within actual bars</li>
+          <li>Colour coding: On Track 🟢 / At Risk 🟡 / Delayed 🔴 / Forecast 🔵</li>
+          <li>Baseline freeze / snapshot comparison (Revision A, B, C…)</li>
+          <li>Float visualization (task slack display)</li>
+          <li>Export: PDF landscape A3, PNG, Excel (structured data)</li>
+        </ul>
+        <div class="source" style="margin-top:10px;">Data source: GANTT_Schedule_Master · Also cross-references: MASTER_Milestones, MASTER_Schedule_WBS</div>
+      </div>
+
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="card" style="border-left:4px solid var(--accent);margin-top:8px;">
+      <h3>🏠 Homepage — Executive Summary (Landing Page)</h3>
+      <p>Single-page overview combining: <strong>Overall % complete</strong> (with trend arrow), <strong>SPI / CPI</strong> KPI tiles, <strong>Top 3 risks</strong>, <strong>Next 3 critical milestones</strong> with countdown, <strong>Open VOs value</strong>, <strong>LTI-free days</strong>, and a <strong>Project Health scorecard</strong> (Red/Amber/Green per domain). Designed to be printable as a 1-page PDF for board/management meetings.</p>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 5A ═════════════════════════════════════ -->
+  <div class="section" id="s5a">
+    <div class="section-title">
+      <div class="section-num" style="background:var(--accent); width:42px; font-size:13px;">5A</div>
+      <h2>Module 13 — Gantt Chart: Full Specification</h2>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">📅</span>
+      <div>Module 13 is the most visually complex component of the dashboard. It renders a <strong>live, interactive Gantt chart</strong> directly from the <code style="background:#dbeafe; padding:1px 5px; border-radius:3px;">GANTT_Schedule_Master</code> Google Sheet — showing both the frozen baseline schedule and the evolving actual/forecast schedule side-by-side, inspired by professional tools like OnlineGantt, GanttPRO, and Primavera P6 web views. No external subscription tool is required; it is fully embedded in the CHPP2 dashboard.</div>
+    </div>
+
+    <!-- ── LIVE PREVIEW ────────────────────────────────── -->
+    <div class="gantt-demo">
+      <!-- Toolbar -->
+      <div class="gantt-toolbar">
+        <span style="color:#fff; font-size:11px; font-weight:700; margin-right:4px;">MODULE 13</span>
+        <span style="color:rgba(255,255,255,0.4); margin-right:4px;">|</span>
+        <span class="gtool active">Monthly</span>
+        <span class="gtool">Quarterly</span>
+        <span class="gtool">Yearly</span>
+        <span class="gtool-sep">|</span>
+        <span class="gtool">🔍 Filter: Party</span>
+        <span class="gtool">🔍 Discipline</span>
+        <span class="gtool">🔍 Phase</span>
+        <span class="gtool-sep">|</span>
+        <span class="gtool">⚠ Critical Path</span>
+        <span class="gtool">📸 Baseline Rev A</span>
+        <span class="gtool-sep">|</span>
+        <span class="gtool">📄 Export PDF A3</span>
+        <span class="gtool">⬇ PNG</span>
+        <span style="margin-left:auto; color:rgba(255,255,255,0.6); font-size:10px;">Last sync: Today 08:00 WIB</span>
+      </div>
+
+      <div class="gantt-body">
+        <!-- Left: Activity list -->
+        <div class="gantt-left">
+          <div class="gantt-header-row">
+            <div class="gantt-col-wbs">WBS</div>
+            <div class="gantt-col-activity">Activity / Milestone</div>
+            <div class="gantt-col-pct">%</div>
+            <div class="gantt-col-resp">Party</div>
+          </div>
+
+          <!-- Phase: Engineering -->
+          <div class="gantt-row group">
+            <div class="gantt-col-wbs gantt-indent-0">1.0</div>
+            <div class="gantt-col-activity gantt-indent-0">▼ Engineering &amp; Design</div>
+            <div class="gantt-col-pct">72%</div>
+            <div class="gantt-col-resp"><span class="tag tag-orange" style="font-size:10px;">EP</span></div>
+          </div>
+          <div class="gantt-row">
+            <div class="gantt-col-wbs gantt-indent-1">1.1</div>
+            <div class="gantt-col-activity gantt-indent-1">Basic Engineering (FEED)</div>
+            <div class="gantt-col-pct" style="color:var(--success); font-weight:700;">100%</div>
+            <div class="gantt-col-resp"><span class="tag tag-orange" style="font-size:10px;">EP</span></div>
+          </div>
+          <div class="gantt-row">
+            <div class="gantt-col-wbs gantt-indent-1">1.2</div>
+            <div class="gantt-col-activity gantt-indent-1">Detailed Engineering</div>
+            <div class="gantt-col-pct" style="color:var(--warning); font-weight:700;">58%</div>
+            <div class="gantt-col-resp"><span class="tag tag-orange" style="font-size:10px;">EP</span></div>
+          </div>
+          <div class="gantt-row">
+            <div class="gantt-col-wbs gantt-indent-2">1.2.1</div>
+            <div class="gantt-col-activity gantt-indent-2">Process &amp; Mechanical</div>
+            <div class="gantt-col-pct">75%</div>
+            <div class="gantt-col-resp"><span class="tag tag-orange" style="font-size:10px;">EP</span></div>
+          </div>
+          <div class="gantt-row" style="background:#fff5f5;">
+            <div class="gantt-col-wbs gantt-indent-2">1.2.2</div>
+            <div class="gantt-col-activity gantt-indent-2" style="color:var(--danger);">Civil &amp; Structural ⚠</div>
+            <div class="gantt-col-pct" style="color:var(--danger); font-weight:700;">32%</div>
+            <div class="gantt-col-resp"><span class="tag tag-orange" style="font-size:10px;">EP</span></div>
+          </div>
+          <div class="gantt-row milestone-row">
+            <div class="gantt-col-wbs gantt-indent-1">◆</div>
+            <div class="gantt-col-activity gantt-indent-1" style="font-weight:700; color:var(--accent);">Design Completion (IFC)</div>
+            <div class="gantt-col-pct">—</div>
+            <div class="gantt-col-resp"><span class="tag tag-blue" style="font-size:10px;">PMC</span></div>
+          </div>
+
+          <!-- Phase: Procurement -->
+          <div class="gantt-row group">
+            <div class="gantt-col-wbs gantt-indent-0">2.0</div>
+            <div class="gantt-col-activity gantt-indent-0">▼ Procurement &amp; Supply</div>
+            <div class="gantt-col-pct">44%</div>
+            <div class="gantt-col-resp"><span class="tag tag-orange" style="font-size:10px;">EP</span></div>
+          </div>
+          <div class="gantt-row">
+            <div class="gantt-col-wbs gantt-indent-1">2.1</div>
+            <div class="gantt-col-activity gantt-indent-1">Long-Lead Equipment (DADI)</div>
+            <div class="gantt-col-pct">60%</div>
+            <div class="gantt-col-resp"><span class="tag tag-orange" style="font-size:10px;">EP</span></div>
+          </div>
+          <div class="gantt-row">
+            <div class="gantt-col-wbs gantt-indent-1">2.2</div>
+            <div class="gantt-col-activity gantt-indent-1">Electrical &amp; Instrumentation</div>
+            <div class="gantt-col-pct">30%</div>
+            <div class="gantt-col-resp"><span class="tag tag-orange" style="font-size:10px;">EP</span></div>
+          </div>
+          <div class="gantt-row milestone-row">
+            <div class="gantt-col-wbs gantt-indent-1">◆</div>
+            <div class="gantt-col-activity gantt-indent-1" style="font-weight:700; color:var(--danger);">All Equip. Delivered ⚠ +45d</div>
+            <div class="gantt-col-pct">—</div>
+            <div class="gantt-col-resp"><span class="tag tag-orange" style="font-size:10px;">EP</span></div>
+          </div>
+
+          <!-- Phase: Construction -->
+          <div class="gantt-row group">
+            <div class="gantt-col-wbs gantt-indent-0">3.0</div>
+            <div class="gantt-col-activity gantt-indent-0">▼ Construction Works</div>
+            <div class="gantt-col-pct">18%</div>
+            <div class="gantt-col-resp"><span class="tag tag-green" style="font-size:10px;">CC</span></div>
+          </div>
+          <div class="gantt-row milestone-row">
+            <div class="gantt-col-wbs gantt-indent-1">◆</div>
+            <div class="gantt-col-activity gantt-indent-1" style="font-weight:700; color:var(--primary);">Mech. Completion CHPP2A</div>
+            <div class="gantt-col-pct">—</div>
+            <div class="gantt-col-resp"><span class="tag tag-green" style="font-size:10px;">CC</span></div>
+          </div>
+          <div class="gantt-row milestone-row">
+            <div class="gantt-col-wbs gantt-indent-1">◆</div>
+            <div class="gantt-col-activity gantt-indent-1" style="font-weight:700; color:var(--primary);">Mech. Completion CHPP2B</div>
+            <div class="gantt-col-pct">—</div>
+            <div class="gantt-col-resp"><span class="tag tag-green" style="font-size:10px;">CC</span></div>
+          </div>
+          <div class="gantt-row milestone-row" style="background:#f0fdf4;">
+            <div class="gantt-col-wbs gantt-indent-0">◆</div>
+            <div class="gantt-col-activity gantt-indent-0" style="font-weight:700; color:var(--success);">Taking-Over Certificate</div>
+            <div class="gantt-col-pct">—</div>
+            <div class="gantt-col-resp"><span class="tag tag-blue" style="font-size:10px;">EMP</span></div>
+          </div>
+        </div>
+
+        <!-- Right: Timeline bars -->
+        <div class="gantt-right" style="position:relative; min-width:560px;">
+          <!-- Wet season band -->
+          <div class="wetseason-band" style="left:66.5%; width:16%;"></div>
+
+          <!-- Today line -->
+          <div class="today-line" style="left:36%;">
+            <div class="today-label">TODAY</div>
+          </div>
+
+          <!-- Month headers -->
+          <div class="gtl-header">
+            <div class="gtl-month">Oct 26</div>
+            <div class="gtl-month">Nov 26</div>
+            <div class="gtl-month">Dec 26</div>
+            <div class="gtl-month wetseason">Jan 27 🌧</div>
+            <div class="gtl-month wetseason">Feb 27 🌧</div>
+            <div class="gtl-month">Mar 27</div>
+            <div class="gtl-month">Apr 27</div>
+          </div>
+
+          <!-- Group row: Engineering -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="bar-baseline" style="left:2%; width:55%; background:#94a3b8;"></div>
+                <div class="bar-actual atrisk" style="left:2%; width:45%;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- 1.1 FEED: complete -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="bar-baseline" style="left:2%; width:22%; background:#94a3b8;"></div>
+                <div class="bar-actual" style="left:2%; width:22%;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- 1.2 Detailed: in progress delayed -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="bar-baseline" style="left:2%; width:52%; background:#94a3b8;"></div>
+                <div class="bar-actual delayed" style="left:2%; width:31%;"></div>
+                <div class="bar-actual forecast" style="left:33%; width:28%;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- 1.2.1 Process -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="bar-baseline" style="left:4%; width:44%; background:#94a3b8;"></div>
+                <div class="bar-actual" style="left:4%; width:38%;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- 1.2.2 Civil delayed -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="bar-baseline" style="left:8%; width:46%; background:#94a3b8;"></div>
+                <div class="bar-actual delayed" style="left:8%; width:20%;"></div>
+                <div class="bar-actual forecast" style="left:28%; width:38%;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Design Completion milestone -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="milestone-diamond" style="left:calc(52% - 6px);"></div>
+                <div class="milestone-diamond achieved" style="left:calc(62% - 6px);"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Group: Procurement -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="bar-baseline" style="left:15%; width:65%; background:#94a3b8;"></div>
+                <div class="bar-actual" style="left:15%; width:32%;"></div>
+                <div class="bar-actual forecast" style="left:47%; width:40%;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- 2.1 Long lead -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="bar-baseline" style="left:15%; width:62%; background:#94a3b8;"></div>
+                <div class="bar-actual" style="left:15%; width:42%;"></div>
+                <div class="bar-actual forecast" style="left:57%; width:28%;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- 2.2 E&I -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="bar-baseline" style="left:20%; width:50%; background:#94a3b8;"></div>
+                <div class="bar-actual" style="left:20%; width:18%;"></div>
+                <div class="bar-actual forecast" style="left:38%; width:40%;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- All equip delivered milestone: delayed -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="milestone-diamond" style="left:calc(66% - 6px);"></div>
+                <div class="milestone-diamond critical" style="left:calc(79% - 6px);"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Group: Construction -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="bar-baseline" style="left:52%; width:46%; background:#94a3b8;"></div>
+                <div class="bar-actual" style="left:52%; width:10%;"></div>
+                <div class="bar-actual forecast" style="left:62%; width:38%;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- MC 2A -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="milestone-diamond" style="left:calc(82% - 6px);"></div>
+                <div class="milestone-diamond critical" style="left:calc(92% - 6px);"></div>
+              </div>
+            </div>
+          </div>
+          <!-- MC 2B -->
+          <div class="gtl-row">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="milestone-diamond" style="left:calc(87% - 6px);"></div>
+                <div class="milestone-diamond critical" style="left:calc(97% - 6px);"></div>
+              </div>
+            </div>
+          </div>
+          <!-- TOC -->
+          <div class="gtl-row" style="background:#f0fdf4;">
+            <div class="gtl-cell" style="position:relative; flex:7;">
+              <div class="bar-wrap">
+                <div class="milestone-diamond achieved" style="background:var(--success); left:calc(96% - 6px); box-shadow: 0 0 0 1px var(--success);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="gantt-legend">
+        <div class="legend-item"><div class="legend-bar" style="background:#94a3b8;"></div> Baseline (Frozen)</div>
+        <div class="legend-item"><div class="legend-bar" style="background:var(--success);"></div> Actual – On Track</div>
+        <div class="legend-item"><div class="legend-bar" style="background:var(--warning);"></div> Actual – At Risk</div>
+        <div class="legend-item"><div class="legend-bar" style="background:var(--danger);"></div> Actual – Delayed</div>
+        <div class="legend-item"><div class="legend-bar" style="background:var(--primary-light); opacity:0.7; border:1px dashed var(--primary-light);"></div> Forecast</div>
+        <div class="legend-item"><div class="legend-diamond" style="background:var(--accent);"></div> Milestone – Pending</div>
+        <div class="legend-item"><div class="legend-diamond" style="background:var(--success);"></div> Milestone – Achieved</div>
+        <div class="legend-item"><div class="legend-diamond" style="background:var(--danger);"></div> Milestone – Delayed</div>
+        <div class="legend-item" style="background:#dbeafe; padding:2px 8px; border-radius:4px; color:#1e40af;">🌧 Wet Season Band (Dec–Feb)</div>
+        <div class="legend-item" style="border-left:3px solid var(--accent); padding-left:6px;">Today Line</div>
+      </div>
+    </div>
+
+    <!-- ── FEATURE SPEC ─────────────────────────────────── -->
+    <div class="feature-grid">
+      <div class="feature-block">
+        <h4>📊 Dual-Bar Display</h4>
+        <ul>
+          <li>Row 1 (top, grey): Frozen baseline bar — never changes once baseline is locked</li>
+          <li>Row 2 (bottom, colour): Actual progress bar with % fill + forecast extension (dashed)</li>
+          <li>Both bars aligned to the same timeline axis for instant visual comparison</li>
+          <li>Colour coding: Green (on track) / Amber (SPI 0.85–0.99) / Red (&lt;0.85 or missed date) / Blue dashed (forecast)</li>
+          <li>Progress fill within bar corresponds to % complete field from source sheet</li>
+        </ul>
+      </div>
+      <div class="feature-block orange">
+        <h4>◆ Milestone System</h4>
+        <ul>
+          <li>Diamond shape (◆) rendered at exact date position on timeline</li>
+          <li>Two diamonds per milestone: baseline date (grey outline) + actual/forecast date (filled colour)</li>
+          <li>States: Achieved (green ◆) / Pending on-track (amber ◆) / Overdue (red ◆ + flag)</li>
+          <li>Tooltip on hover: Baseline date, Forecast date, Variance (days), Responsible party</li>
+          <li>All 9 contract key milestones (from Employer Requirements §9.1) pre-loaded as fixed entries</li>
+          <li>Milestone-only view toggle: collapses all task bars, shows only diamonds on timeline</li>
+        </ul>
+      </div>
+      <div class="feature-block green">
+        <h4>🔗 Dependencies & Critical Path</h4>
+        <ul>
+          <li>Finish-to-Start (FS), Start-to-Start (SS), Finish-to-Finish (FF) arrows rendered as SVG lines</li>
+          <li>Lag/lead time shown numerically on arrow (e.g., "+5d")</li>
+          <li>Critical path toggle: highlights entire chain in red when enabled</li>
+          <li>Float display: grey extension bar showing available slack days per task</li>
+          <li>Predecessor column in left panel links activities for easy reference</li>
+        </ul>
+      </div>
+      <div class="feature-block purple">
+        <h4>🌧 CHPP2-Specific Features</h4>
+        <ul>
+          <li>Wet season risk band (Dec–Feb) automatically highlighted in soft blue on timeline — warns when delivery/construction activities overlap</li>
+          <li>Barito River navigation constraint flag on any logistics activity falling in Dec–Feb window</li>
+          <li>CHPP2A vs CHPP2B parallel track view — side-by-side unit comparison</li>
+          <li>CLSTK Phase 1 / Phase 2 boundary marker on timeline (conversion point)</li>
+          <li>EP Contract vs Construction Contract colour-coded swim lanes</li>
+        </ul>
+      </div>
+      <div class="feature-block">
+        <h4>🔍 Filtering & Navigation</h4>
+        <ul>
+          <li>Filter by: Party (EP/CC/PMC/Employer), Discipline, Phase, WBS Level, Status (On Track/At Risk/Delayed)</li>
+          <li>Search by activity name (instant keyword highlight)</li>
+          <li>Collapse/expand WBS levels 1–4 individually or globally</li>
+          <li>Time-scale zoom: Weekly (near-term detail) / Monthly (standard view) / Quarterly / Yearly (full project overview)</li>
+          <li>Scroll-to-today button — always centres the view on current date</li>
+          <li>Drag-to-scroll timeline horizontally</li>
+        </ul>
+      </div>
+      <div class="feature-block orange">
+        <h4>📸 Baseline Snapshot Management</h4>
+        <ul>
+          <li>Baseline Rev A: initial contract baseline (frozen at contract award)</li>
+          <li>Baseline Rev B, C…: formally approved revised baselines after accepted EOTs</li>
+          <li>Snapshot comparison: overlay any two revisions to visualise schedule growth</li>
+          <li>Snapshot stored as dedicated tab in <code>GANTT_Schedule_Master</code> sheet (columns duplicated with revision suffix)</li>
+          <li>Variance column auto-calculated: Forecast Finish minus Baseline Finish (days)</li>
+          <li>Baseline lock: once Rev A is set, baseline columns are sheet-protected</li>
+        </ul>
+      </div>
+      <div class="feature-block green">
+        <h4>📤 Export Capabilities</h4>
+        <ul>
+          <li>PDF export: A3 landscape, full chart with legend — suitable for progress meeting packs</li>
+          <li>PNG export: high-resolution snapshot for email/presentation embedding</li>
+          <li>Excel export: structured data dump of current view (filtered activities only)</li>
+          <li>Print-friendly CSS mode for direct browser printing</li>
+          <li>Share: generate a read-only public link (time-expiring) for board/external stakeholder review</li>
+        </ul>
+      </div>
+      <div class="feature-block purple">
+        <h4>⚙️ Technical Implementation</h4>
+        <ul>
+          <li>Rendering library: <strong>DHTMLX Gantt</strong> (open-source) or <strong>Frappe Gantt</strong> (lightweight, MIT license) embedded in React component</li>
+          <li>Data parsed from <code>GANTT_Schedule_Master</code> Google Sheet via Sheets API v4 on each sync cycle</li>
+          <li>SVG-based rendering for dependency arrows and milestone diamonds — crisp at all zoom levels</li>
+          <li>Virtualised row rendering for performance with 500+ activities</li>
+          <li>All date logic uses ISO 8601 (UTC) with WIB (+7) display conversion</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Data schema -->
+    <div class="card">
+      <h3>📋 GANTT_Schedule_Master — Required Column Schema</h3>
+      <table>
+        <thead><tr><th>Column Name</th><th>Type</th><th>Required</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>WBS_ID</code></td><td>Text</td><td>✅ Yes</td><td>e.g., "1.2.1" — dot-notation defines hierarchy depth (levels 1–4)</td></tr>
+          <tr><td><code>WBS_Level</code></td><td>Integer (1–4)</td><td>✅ Yes</td><td>Controls indent and group-row styling. Level 1 = Phase; Level 4 = task</td></tr>
+          <tr><td><code>Activity_Name</code></td><td>Text</td><td>✅ Yes</td><td>Displayed in left panel. Keep concise (&lt;60 chars)</td></tr>
+          <tr><td><code>Phase</code></td><td>Text</td><td>✅ Yes</td><td>Engineering / Procurement / Construction / Commissioning</td></tr>
+          <tr><td><code>Discipline</code></td><td>Text</td><td>✅ Yes</td><td>Process / Civil / Structural / Mechanical / E&amp;I / General</td></tr>
+          <tr><td><code>Party</code></td><td>Text</td><td>✅ Yes</td><td>EP / CC / PMC / Employer — drives filter and colour-coding</td></tr>
+          <tr><td><code>Baseline_Start</code></td><td>Date (DD/MM/YYYY)</td><td>✅ Yes</td><td>Locked after Rev A baseline approval — sheet-protected</td></tr>
+          <tr><td><code>Baseline_Finish</code></td><td>Date (DD/MM/YYYY)</td><td>✅ Yes</td><td>Locked after Rev A baseline approval</td></tr>
+          <tr><td><code>Actual_Start</code></td><td>Date (DD/MM/YYYY)</td><td>⚠ If started</td><td>Leave blank if activity not yet commenced</td></tr>
+          <tr><td><code>Actual_Finish</code></td><td>Date (DD/MM/YYYY)</td><td>⚠ If complete</td><td>Leave blank if activity not yet complete</td></tr>
+          <tr><td><code>Forecast_Finish</code></td><td>Date (DD/MM/YYYY)</td><td>✅ Yes</td><td>Current best estimate — updated weekly. If complete, same as Actual_Finish</td></tr>
+          <tr><td><code>Pct_Complete</code></td><td>Number (0–100)</td><td>✅ Yes</td><td>% physical progress — determines fill within actual bar</td></tr>
+          <tr><td><code>Is_Milestone</code></td><td>Y/N</td><td>✅ Yes</td><td>Y = renders diamond only (no bar); N = renders bars</td></tr>
+          <tr><td><code>Is_Critical_Path</code></td><td>Y/N</td><td>✅ Yes</td><td>Y = highlights red when Critical Path filter is ON</td></tr>
+          <tr><td><code>Predecessors</code></td><td>Text</td><td>Optional</td><td>Comma-separated WBS_IDs with type: e.g., "1.1 FS, 1.2 SS+5"</td></tr>
+          <tr><td><code>Float_Days</code></td><td>Integer</td><td>Optional</td><td>Total float in calendar days — renders slack bar if &gt;0</td></tr>
+          <tr><td><code>Bar_Colour</code></td><td>Hex code</td><td>Optional</td><td>Overrides default colour coding — use sparingly for special highlight</td></tr>
+          <tr><td><code>Remarks</code></td><td>Text</td><td>Optional</td><td>Displays in hover tooltip — key constraints, risks, notes</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-orange">
+      <span class="callout-icon">⚠️</span>
+      <div><strong>Governance Rule:</strong> The <code>GANTT_Schedule_Master</code> sheet is jointly owned by the EP Contractor and the PMC. The EP Contractor updates <em>actual and forecast columns</em> every Monday by 09:00 WIB. The PMC validates entries and approves by Wednesday. The Employer's admin account has read-only access at all times. Baseline columns are sheet-protected — modifications require a formal VO/EOT and the PMC must unlock the protection to log a new revision.</div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 6 ══════════════════════════════════════ -->
+  <div class="section" id="s6">
+    <div class="section-title">
+      <div class="section-num">6</div>
+      <h2>Development Phases & Sprint Plan</h2>
+    </div>
+
+    <div class="phase-timeline">
+      <div class="phase-block ph-1">Phase 0<div class="label">Foundation & Setup<br>Week 1–2</div></div>
+      <div class="phase-block ph-2">Phase 1<div class="label">Core Modules<br>Week 3–6</div></div>
+      <div class="phase-block ph-3">Phase 2<div class="label">Advanced Modules<br>Week 7–10</div></div>
+      <div class="phase-block ph-4">Phase 3<div class="label">Integration & UAT<br>Week 11–14</div></div>
+      <div class="phase-block ph-5">Phase 4<div class="label">Go-Live & Handover<br>Week 15–16</div></div>
+    </div>
+
+    <table class="sprint-row">
+      <thead><tr><th>Phase</th><th>Sprint / Week</th><th>Deliverables</th><th>Owner</th><th>Acceptance Gate</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Phase 0</td>
+          <td>Week 1–2</td>
+          <td>
+            ① Stakeholder kick-off & requirements sign-off<br>
+            ② Define all 13 Excel/Sheets templates with column schema (incl. GANTT_Schedule_Master)<br>
+            ③ Set up development environment (GitHub repo, hosting)<br>
+            ④ Google Sheets API authentication & access grants<br>
+            ⑤ SharePoint / Teams channel structure for data sheets<br>
+            ⑥ User role matrix & access control design<br>
+            ⑦ Baseline schedule lock-in with EP Contractor — freeze Rev A in GANTT_Schedule_Master
+          </td>
+          <td>PM + Dev Lead + PMC</td>
+          <td>Approved data schema & access matrix signed off by Employer</td>
+        </tr>
+        <tr>
+          <td>Phase 1</td>
+          <td>Week 3–4<br><em>Sprint 1</em></td>
+          <td>
+            ① Homepage Executive Summary layout (static)<br>
+            ② Module 01: S-Curve — data ingestion + chart rendering<br>
+            ③ Module 02: Milestone Tracker — table + traffic light<br>
+            ④ Authentication layer (Google OAuth / MS SSO)
+          </td>
+          <td>Dev Team</td>
+          <td>S-Curve renders correctly from live Google Sheet; Milestones display with correct RAG status</td>
+        </tr>
+        <tr>
+          <td>Phase 1</td>
+          <td>Week 5–6<br><em>Sprint 2</em></td>
+          <td>
+            ① Module 03: Employer Procurement Status (Gantt + table)<br>
+            ② Module 04: MDR — searchable, filterable table<br>
+            ③ Module 08: Commercial tracker — burn curve + payment certs<br>
+            ④ PDF export for homepage summary
+          </td>
+          <td>Dev Team</td>
+          <td>Commercial data matches source Excel; PDF export generates in &lt;5 sec</td>
+        </tr>
+        <tr>
+          <td>Phase 2</td>
+          <td>Week 7–8<br><em>Sprint 3</em></td>
+          <td>
+            ① Module 05: EP Procurement Masterlist — equipment tracker<br>
+            ② Module 06: Risk heat map + issue log<br>
+            ③ Module 07: VO/Change Log with aging<br>
+            ④ <strong>Module 13: Gantt Chart — Phase A</strong> (dual-bar renderer, WBS hierarchy, milestone diamonds, today line, wet season band)<br>
+            ⑤ Alert engine: threshold-based email/Teams notifications
+          </td>
+          <td>Dev Team</td>
+          <td>Risk heat map populates from sheet; Gantt renders baseline + actual bars correctly with correct milestone diamonds; alerts fire on test trigger</td>
+        </tr>
+        <tr>
+          <td>Phase 2</td>
+          <td>Week 9–10<br><em>Sprint 4</em></td>
+          <td>
+            ① Module 09: HSE Dashboard<br>
+            ② Module 10: Logistics Tracker + wet season calendar<br>
+            ③ Module 11: Quality / NCR Tracker<br>
+            ④ Module 12: Manpower / Resource Report<br>
+            ⑤ <strong>Module 13: Gantt Chart — Phase B</strong> (dependency arrows, critical path toggle, filter panel, baseline snapshot comparison, zoom controls, PDF/PNG export)<br>
+            ⑥ Mobile responsive testing
+          </td>
+          <td>Dev Team</td>
+          <td>All 13 modules functional; Gantt dependency arrows render correctly; baseline vs actual comparison works; mobile layout passes on tablet &amp; phone</td>
+        </tr>
+        <tr>
+          <td>Phase 3</td>
+          <td>Week 11–12<br><em>Sprint 5</em></td>
+          <td>
+            ① Integration testing with real project data (not dummy)<br>
+            ② Performance optimisation &amp; caching (offline mode)<br>
+            ③ User Acceptance Testing (UAT) — Employer + PMC review<br>
+            ④ Bug fixes from UAT round 1
+          </td>
+          <td>Dev + PMC + Employer</td>
+          <td>UAT sign-off checklist completed by Employer; zero critical bugs</td>
+        </tr>
+        <tr>
+          <td>Phase 3</td>
+          <td>Week 13–14<br><em>Sprint 6</em></td>
+          <td>
+            ① UAT round 2 with EP Contractor &amp; CC input users<br>
+            ② Training materials (user guide + 30-min video walkthrough)<br>
+            ③ Role-based access provisioning for all users<br>
+            ④ Security review &amp; penetration test
+          </td>
+          <td>Dev + PMC</td>
+          <td>All users trained; security review cleared; final UAT sign-off</td>
+        </tr>
+        <tr>
+          <td>Phase 4</td>
+          <td>Week 15–16</td>
+          <td>
+            ① Production deployment<br>
+            ② Go-live announcement &amp; hypercare support (2 weeks)<br>
+            ③ Handover documentation (technical runbook, admin guide)<br>
+            ④ Establish monthly dashboard review cadence
+          </td>
+          <td>Dev Lead + PM</td>
+          <td>Dashboard live; all parties accessing; first real weekly report generated</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- ═══ SECTION 7 ══════════════════════════════════════ -->
+  <div class="section" id="s7">
+    <div class="section-title">
+      <div class="section-num">7</div>
+      <h2>Technology Stack & Tooling</h2>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Frontend</h3>
+        <p><strong>Framework:</strong> React (Next.js) — server-side rendering for performance in low-bandwidth environments.</p>
+        <p><strong>Styling:</strong> Tailwind CSS — rapid, consistent UI with no heavy CSS frameworks.</p>
+        <p><strong>Charts:</strong> Recharts or Apache ECharts — S-curves, heat maps, Gantt bars, donut charts.</p>
+        <p><strong>Tables:</strong> TanStack Table (React Table v8) — sortable, filterable, paginated for MDR and procurement lists.</p>
+        <p><strong>PDF Export:</strong> React-PDF or Puppeteer headless Chrome for weekly report generation.</p>
+      </div>
+      <div class="card">
+        <h3>Backend / Processing</h3>
+        <p><strong>Runtime:</strong> Node.js (Next.js API routes) — single codebase front+back.</p>
+        <p><strong>Data connector:</strong> Google Sheets API v4 (googleapis npm) for Sheets; ExcelJS for parsing SharePoint-hosted Excel files.</p>
+        <p><strong>Scheduling:</strong> GitHub Actions or Vercel Cron for automated sync every 6 hours.</p>
+        <p><strong>Caching:</strong> In-memory (Redis optional) for latest dataset snapshot — enables offline/low-connectivity use.</p>
+      </div>
+      <div class="card">
+        <h3>Authentication & Access</h3>
+        <p><strong>Auth provider:</strong> Microsoft Azure AD (MS SSO) — aligns with Teams/SharePoint already in use by Adaro Group.</p>
+        <p><strong>Fallback:</strong> Google OAuth 2.0 for users on Google Workspace.</p>
+        <p><strong>Role management:</strong> NextAuth.js with custom role claims from Azure AD groups.</p>
+      </div>
+      <div class="card">
+        <h3>Hosting & DevOps</h3>
+        <p><strong>Hosting:</strong> Vercel (preferred for Next.js) or Azure App Service (if Adaro IT mandates Azure).</p>
+        <p><strong>CI/CD:</strong> GitHub Actions — automated testing + deployment on merge to main.</p>
+        <p><strong>Version control:</strong> GitHub private repository under PT Maruwai Coal organisation.</p>
+        <p><strong>Monitoring:</strong> Vercel Analytics or Azure Monitor for uptime and performance tracking.</p>
+      </div>
+      <div class="card">
+        <h3>Alternative: Google AI Studio Integration</h3>
+        <p>The Gemini API (Google AI Studio) can be embedded for <strong>natural language querying</strong> of the dashboard — e.g., "What are the top 3 overdue documents?" or "Summarise this month's commercial exposure." This is a Phase 2+ enhancement and does not block the core dashboard.</p>
+      </div>
+      <div class="card">
+        <h3>Development Environment</h3>
+        <p><strong>IDE:</strong> VS Code with ESLint + Prettier.</p>
+        <p><strong>API testing:</strong> Postman or Bruno for Sheets API endpoints.</p>
+        <p><strong>UI component library:</strong> shadcn/ui (pre-built accessible components).</p>
+        <p><strong>Project management:</strong> GitHub Issues + Projects board for sprint tracking.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 8 ══════════════════════════════════════ -->
+  <div class="section" id="s8">
+    <div class="section-title">
+      <div class="section-num">8</div>
+      <h2>Data Flow & Integration</h2>
+    </div>
+
+    <div class="card">
+      <h3>End-to-End Data Flow Sequence</h3>
+      <table>
+        <thead><tr><th>Step</th><th>Actor</th><th>Action</th><th>Tool</th><th>Frequency</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>EP Contractor / CC</td><td>Updates progress data in own designated Google Sheet tab</td><td>Google Sheets (Teams embedded)</td><td>Weekly</td></tr>
+          <tr><td>2</td><td>PMC / Document Controller</td><td>Reviews, validates, and approves data inputs</td><td>Google Sheets + email notification</td><td>Weekly</td></tr>
+          <tr><td>3</td><td>Dashboard Sync Engine</td><td>Polls Google Sheets API & SharePoint for updated data</td><td>Node.js cron job (every 6 hrs)</td><td>Automated</td></tr>
+          <tr><td>4</td><td>Computation Engine</td><td>Calculates S-curve metrics, EV, SPI, CPI, aging, risk scores</td><td>Server-side JavaScript functions</td><td>On each sync</td></tr>
+          <tr><td>5</td><td>Alert Engine</td><td>Checks thresholds (overdue docs, SPI &lt;0.9, open risks overdue)</td><td>Nodemailer / MS Teams Webhook</td><td>On each sync</td></tr>
+          <tr><td>6</td><td>Dashboard UI</td><td>Renders latest computed data from cache</td><td>React (Next.js)</td><td>On page load</td></tr>
+          <tr><td>7</td><td>Employer / PMC</td><td>Reviews dashboard, exports weekly PDF report</td><td>Browser / PDF export</td><td>Weekly</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">🔗</span>
+      <div><strong>Microsoft Teams Integration:</strong> Each workbook is pinned as a tab in the relevant Teams channel (e.g., "EP Contract" channel → EP Procurement sheet; "Project Controls" channel → Schedule & Risk sheets). This gives field teams direct access without visiting a separate portal, ensuring adoption and data freshness.</div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 9 ══════════════════════════════════════ -->
+  <div class="section" id="s9">
+    <div class="section-title">
+      <div class="section-num">9</div>
+      <h2>Access Control & Collaboration Framework</h2>
+    </div>
+
+    <table>
+      <thead><tr><th>User Group</th><th>Module Access</th><th>Permissions</th><th>Auth Method</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Employer Admin</strong> (PT Maruwai Coal directors)</td><td>All 12 modules + admin panel</td><td>Full read/write + user management</td><td>Azure AD SSO</td></tr>
+        <tr><td><strong>Employer Project Team</strong></td><td>All 12 modules</td><td>Full read; write on Employer-owned sheets</td><td>Azure AD SSO</td></tr>
+        <tr><td><strong>PMC / Employer's Engineer</strong></td><td>All 12 modules</td><td>Read all; write on MDR, Payment Certs, Risk Register</td><td>Azure AD SSO</td></tr>
+        <tr><td><strong>EP Contractor (Project Manager)</strong></td><td>Modules 01, 02, 04, 05, 06, 09, 10, 12</td><td>Read shared modules; write EP data only</td><td>Google OAuth or Azure AD</td></tr>
+        <tr><td><strong>EP Contractor (Commercial)</strong></td><td>Modules 07, 08</td><td>Read own commercial data; write VO submissions</td><td>Google OAuth</td></tr>
+        <tr><td><strong>Construction Contractor</strong></td><td>Modules 01 (own), 02, 06, 09, 11, 12</td><td>Read relevant; write CC progress data</td><td>Google OAuth or Azure AD</td></tr>
+        <tr><td><strong>Adaro Group Board</strong></td><td>Homepage only (executive view)</td><td>Read only — aggregated KPIs</td><td>Azure AD SSO</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══ SECTION 10 ══════════════════════════════════════ -->
+  <div class="section" id="s10">
+    <div class="section-title">
+      <div class="section-num">10</div>
+      <h2>Risks, Constraints & Mitigations</h2>
+    </div>
+
+    <table>
+      <thead><tr><th>Risk</th><th>Probability</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>Poor internet connectivity at Lampunut site causes sync failures</td><td><span class="tag tag-red">High</span></td><td><span class="tag tag-red">High</span></td><td>Implement offline cache; sync on reconnect; allow Excel download as offline backup</td></tr>
+        <tr><td>EP Contractor delays data input to Google Sheets</td><td><span class="tag tag-orange">Medium</span></td><td><span class="tag tag-red">High</span></td><td>Make data submission a contractual obligation with PMC validation gate; automated reminder emails</td></tr>
+        <tr><td>Google Sheets API rate limits hit with many users</td><td><span class="tag tag-orange">Medium</span></td><td><span class="tag tag-orange">Medium</span></td><td>Use server-side cache (6-hour sync); never hit API per user request</td></tr>
+        <tr><td>Column renaming in source sheets breaks dashboard</td><td><span class="tag tag-orange">Medium</span></td><td><span class="tag tag-red">High</span></td><td>Protect header rows; column-schema validation on every sync; alert on schema mismatch</td></tr>
+        <tr><td>Scope creep in dashboard features extends timeline</td><td><span class="tag tag-orange">Medium</span></td><td><span class="tag tag-orange">Medium</span></td><td>Strict MVP scope for Phase 1; feature backlog for Phase 3+; formal change control for dashboard enhancements</td></tr>
+        <tr><td>Azure AD not available for all contractor users</td><td><span class="tag tag-blue">Low</span></td><td><span class="tag tag-orange">Medium</span></td><td>Dual auth (Azure AD + Google OAuth); email/password fallback as last resort</td></tr>
+        <tr><td>Sensitive commercial data exposed to wrong party</td><td><span class="tag tag-blue">Low</span></td><td><span class="tag tag-red">High</span></td><td>Strict role-based access; server-side data filtering (never send full dataset to browser); quarterly access audit</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══ SECTION 11 ══════════════════════════════════════ -->
+  <div class="section" id="s11">
+    <div class="section-title">
+      <div class="section-num">11</div>
+      <h2>Acceptance Criteria & Dashboard KPIs</h2>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <ul class="checklist">
+          <li><span class="icon icon-check">✓</span>S-Curve reflects actual progress within 24 hours of source sheet update</li>
+          <li><span class="icon icon-check">✓</span>All 12 modules load within 3 seconds on a standard broadband connection</li>
+          <li><span class="icon icon-check">✓</span>Dashboard functions (read-only cached mode) even with no internet for 24 hours</li>
+          <li><span class="icon icon-check">✓</span>PDF weekly report generates in under 10 seconds with all current data</li>
+          <li><span class="icon icon-check">✓</span>Role-based access prevents cross-party data leakage (tested via penetration test)</li>
+          <li><span class="icon icon-check">✓</span>Alert emails fire within 1 hour of a threshold breach being detected</li>
+          <li><span class="icon icon-check">✓</span>Mobile view is fully usable on tablet (iPad/Android 10")</li>
+          <li><span class="icon icon-warn">!</span>Commercial module values reconcile to source Excel within ±0.1% (rounding only)</li>
+          <li><span class="icon icon-warn">!</span>Milestone RAG logic matches PMC's assessment in 95%+ of cases</li>
+          <li><span class="icon icon-info">i</span>User adoption: 80%+ of governed parties accessing dashboard weekly after go-live</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Post Go-Live Maintenance Cadence</h3>
+        <p><strong>Weekly:</strong> Automated data sync review; alert log checked; PDF report issued to Employer.</p>
+        <p><strong>Monthly:</strong> Dashboard enhancement review session; user feedback collection; access audit.</p>
+        <p><strong>Quarterly:</strong> Full security review; schema validation check against evolving project data; performance benchmark.</p>
+        <p><strong>On contract milestone:</strong> Dashboard configuration updated (e.g., CLSTK Phase 1→2 conversion triggers new commercial module parameters).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 12 ══════════════════════════════════════ -->
+  <div class="section" id="s12">
+    <div class="section-title">
+      <div class="section-num">12</div>
+      <h2>Appendix — Recommended Additional Modules (Phase 3+)</h2>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>🤖 AI Query Assistant</h3>
+        <p>Embed Google AI Studio (Gemini) to allow natural-language queries of dashboard data: "What is the current SPI for the EP Contract?" or "List all overdue documents from DADI." Powered by Gemini Flash with structured JSON data context.</p>
+      </div>
+      <div class="card">
+        <h3>📸 Photo Progress Gallery</h3>
+        <p>Weekly site photo uploads linked to WBS activities. Stored in SharePoint; thumbnails displayed in dashboard per construction zone. Provides visual evidence of physical progress beyond S-curve numbers.</p>
+      </div>
+      <div class="card">
+        <h3>🌦️ Weather & Barito River Level</h3>
+        <p>API integration with BMKG (Indonesian Meteorology Agency) to show rainfall forecast for Lampunut and Barito River level — directly relevant to logistics planning for the Dec 2026–Feb 2027 equipment delivery window.</p>
+      </div>
+      <div class="card">
+        <h3>📋 Meeting Action Tracker</h3>
+        <p>Log action items from weekly progress meetings (Employer, PMC, EP, CC). Track owner, due date, status. Link actions to risks or milestones. Replaces manual meeting minute tracking.</p>
+      </div>
+      <div class="card">
+        <h3>🏭 Equipment Commissioning Tracker</h3>
+        <p>For the commissioning phase: checklist per equipment tag (CHPP2A & 2B), punch list management, pre-commissioning vs commissioning vs performance test status. Tied directly to Payment Certificate milestones.</p>
+      </div>
+      <div class="card">
+        <h3>📊 TKDN Compliance Dashboard</h3>
+        <p>Consolidated TKDN % tracking across both EP and Construction contracts. Running total vs contractual minimum, drill-down by category (goods/services/works). Critical for Indonesian regulatory compliance.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══ SECTION 13 ══════════════════════════════════════ -->
+  <div class="section" id="s13">
+    <div class="section-title">
+      <div class="section-num">13</div>
+      <h2>Module 13 — Gantt Chart: Baseline vs Actual Schedule Viewer</h2>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">📅</span>
+      <div>This module provides a full <strong>interactive Gantt chart</strong> rendered directly in the browser, inspired by tools like OnlineGantt and MS Project's baseline view. It reads the master schedule WBS from Google Sheets and renders dual bars (Baseline vs Actual/Forecast), milestone diamonds, critical path, dependency links, and a live "Today" marker — with <strong>wet season risk bands</strong> specifically overlaid for the Barito River logistics window (Dec–Feb).</div>
+    </div>
+
+    <!-- ── FEATURE SPECS ────────────────────────────── -->
+    <div class="spec-grid">
+      <div class="spec-box">
+        <h4>🗂️ WBS & Hierarchy</h4>
+        <ul>
+          <li>4-level collapsible WBS tree (Project → Phase → Discipline → Activity)</li>
+          <li>Separate WBS tracks: EP Contract, Construction Contract, Milestones</li>
+          <li>Indent levels shown visually with expand/collapse toggles</li>
+          <li>Summary rows auto-calculate from child activities</li>
+          <li>Group-level bars span min–max of all children</li>
+        </ul>
+      </div>
+      <div class="spec-box">
+        <h4>📊 Dual-Bar Rendering</h4>
+        <ul>
+          <li><strong>Baseline bar</strong> — thin grey bar below, from GANTT_Schedule_Master "Baseline Start / Finish"</li>
+          <li><strong>Actual bar</strong> — solid coloured bar; colour coded by status: blue (planned), amber (in progress), green (complete), red (delayed)</li>
+          <li><strong>Forecast tail</strong> — purple striped extension beyond today if task is delayed</li>
+          <li>Variance label shown on hover: "−14 days ahead" / "+21 days behind"</li>
+        </ul>
+      </div>
+      <div class="spec-box">
+        <h4>💎 Milestones & Critical Path</h4>
+        <ul>
+          <li>Milestone rows display a rotating diamond (◆) instead of a bar</li>
+          <li>Diamond colour: Orange (upcoming), Green (achieved on time), Red (missed)</li>
+          <li>Critical path tasks highlighted with red bar outline + "CP" badge</li>
+          <li>Float/slack shown as grey trailing line on non-critical tasks</li>
+          <li>Contractual milestone dates locked and cannot be hidden</li>
+        </ul>
+      </div>
+      <div class="spec-box">
+        <h4>🔗 Dependencies & Links</h4>
+        <ul>
+          <li>Finish-to-Start (FS), Start-to-Start (SS), Finish-to-Finish (FF) arrows</li>
+          <li>Lag days shown on dependency line on hover</li>
+          <li>Red dependency lines indicate a predecessor is delayed</li>
+          <li>Toggle dependencies on/off from toolbar</li>
+          <li>Click dependency line → shows impacted successor chain</li>
+        </ul>
+      </div>
+      <div class="spec-box">
+        <h4>🔍 Zoom & Navigation</h4>
+        <ul>
+          <li>Zoom levels: <strong>Year</strong> (whole project) / <strong>Quarter</strong> / <strong>Month</strong> / <strong>2-Week</strong></li>
+          <li>"Jump to Today" button — snaps view to current date column</li>
+          <li>"Jump to Next Milestone" button — scrolls to upcoming critical milestone</li>
+          <li>Horizontal scroll with sticky left task-list panel</li>
+          <li>Mini-map / overview bar at bottom for navigation on large schedules</li>
+        </ul>
+      </div>
+      <div class="spec-box">
+        <h4>🌧️ Wet Season & Special Overlays</h4>
+        <ul>
+          <li>Blue shaded band: Dec–Feb (Central Kalimantan wet season / Barito River flood risk)</li>
+          <li>Label: "⚠ Wet Season — Delivery Risk Window"</li>
+          <li>Equipment delivery tasks within the band are auto-flagged with orange warning icon</li>
+          <li>Optional: AMDAL permitting freeze window overlay</li>
+          <li>Optional: Indonesian public holiday blocks (Lebaran, Natal)</li>
+        </ul>
+      </div>
+      <div class="spec-box">
+        <h4>🎛️ Filter & View Controls</h4>
+        <ul>
+          <li>Filter by Party: All / EP Contractor / Construction Contractor / Milestones Only</li>
+          <li>Filter by Discipline: Civil, Structural, Mechanical, Electrical, I&C, Commissioning</li>
+          <li>Filter by Status: On Track / At Risk / Delayed / Complete</li>
+          <li>Toggle: Show/hide baseline bars independently</li>
+          <li>Toggle: Show/hide float/slack lines</li>
+          <li>Toggle: Critical Path only (hide non-critical)</li>
+          <li>Save custom view as named preset</li>
+        </ul>
+      </div>
+      <div class="spec-box">
+        <h4>📤 Export & Reporting</h4>
+        <ul>
+          <li>Export current Gantt view as <strong>PDF</strong> (landscape A3 or A4)</li>
+          <li>Export as <strong>PNG image</strong> for embedding in weekly reports</li>
+          <li>Export filtered data back to <strong>Excel</strong> (WBS + dates + % complete)</li>
+          <li>Snapshot comparison: save today's state and compare next week</li>
+          <li>Auto-generate monthly "Look-Ahead Schedule" (next 6-week window)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── LIVE GANTT PROTOTYPE ─────────────────────── -->
+    <div style="margin-bottom:16px;">
+      <h3 style="font-size:16px; font-weight:700; color:var(--primary); margin-bottom:12px;">
+        🖥️ Interactive Prototype — CHPP2 Master Schedule (Illustrative)
+      </h3>
+      <p style="font-size:13px; color:var(--gray-600); margin-bottom:14px;">
+        The following is a <strong>live rendered prototype</strong> showing how the Gantt module will appear in the dashboard, using illustrative CHPP2 schedule data. Hover over bars for details. All features are fully functional in the final implementation with real project data pulled from <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;">GANTT_Schedule_Master</code> Google Sheet.
+      </p>
+    </div>
+
+    <!-- GANTT TOOLBAR -->
+    <div class="gantt-section">
+      <div class="gantt-toolbar">
+        <span class="g-label">View:</span>
+        <button class="g-btn active">📋 Full WBS</button>
+        <button class="g-btn">🏁 Milestones</button>
+        <button class="g-btn">📊 Summary</button>
+        <div class="g-sep"></div>
+        <span class="g-label">Zoom:</span>
+        <button class="g-btn">Year</button>
+        <button class="g-btn active">Quarter</button>
+        <button class="g-btn">Month</button>
+        <div class="g-sep"></div>
+        <span class="g-label">Party:</span>
+        <button class="g-btn active">All</button>
+        <button class="g-btn">EP Contract</button>
+        <button class="g-btn">Construction</button>
+        <div class="g-sep"></div>
+        <button class="g-btn" style="margin-left:auto;">📍 Jump to Today</button>
+        <button class="g-btn accent-btn">📤 Export PDF</button>
+      </div>
+
+      <!-- GANTT BODY -->
+      <div class="gantt-wrapper" id="ganttWrapper">
+
+        <!-- LEFT PANEL — Task List -->
+        <div class="gantt-tasks">
+          <div class="gantt-tasks-header">
+            <span></span>
+            <span>Activity / WBS</span>
+            <span style="text-align:center">Start</span>
+            <span style="text-align:center">%</span>
+          </div>
+
+          <!-- EP CONTRACT GROUP -->
+          <div class="gantt-row group"><span class="expand-icon">▼</span><span class="task-name">📁 EP CONTRACT</span><span class="date-cell">Mar '26</span><span class="date-cell" style="color:var(--primary-light);font-weight:700">22%</span></div>
+
+          <div class="gantt-row"><span></span><span class="task-name task-indent">⚙️ Basic Engineering Design</span><span class="date-cell">Mar '26</span><span class="date-cell">65%</span></div>
+          <div class="gantt-row"><span></span><span class="task-name task-indent">📐 Detailed Engineering Design</span><span class="date-cell">May '26</span><span class="date-cell">5%</span></div>
+          <div class="gantt-row"><span></span><span class="task-name task-indent">— Civil/Structural Design</span><span class="date-cell">May '26</span><span class="date-cell">8%</span></div>
+          <div class="gantt-row"><span></span><span class="task-name task-indent">— Mech/Elec/I&C Design</span><span class="date-cell">Jun '26</span><span class="date-cell">2%</span></div>
+
+          <div class="gantt-row"><span></span><span class="task-name task-indent">🛒 Procurement — Long Lead</span><span class="date-cell">Mar '26</span><span class="date-cell">35%</span></div>
+          <div class="gantt-row"><span></span><span class="task-name task-indent2">Jaw Crusher (CHPP2A)</span><span class="date-cell">Mar '26</span><span class="date-cell">70%</span></div>
+          <div class="gantt-row delayed"><span></span><span class="task-name task-indent2">⚠ Dense Media Vessel</span><span class="date-cell">Apr '26</span><span class="date-cell">20%</span></div>
+          <div class="gantt-row"><span></span><span class="task-name task-indent2">Thickener (×2, dome)</span><span class="date-cell">May '26</span><span class="date-cell">10%</span></div>
+          <div class="gantt-row"><span></span><span class="task-name task-indent2">Radial Stacker</span><span class="date-cell">Apr '26</span><span class="date-cell">40%</span></div>
+
+          <div class="gantt-row"><span></span><span class="task-name task-indent">🚢 Logistics & Site Delivery</span><span class="date-cell">Oct '26</span><span class="date-cell">0%</span></div>
+          <div class="gantt-row"><span></span><span class="task-name task-indent">🔬 Commissioning — CHPP2A</span><span class="date-cell">Mar '27</span><span class="date-cell">0%</span></div>
+          <div class="gantt-row milestone-row"><span></span><span class="task-name task-indent" style="color:var(--accent);font-weight:700">◆ Mech. Completion CHPP2A</span><span class="date-cell">Feb '27</span><span class="date-cell">—</span></div>
+
+          <!-- CONSTRUCTION GROUP -->
+          <div class="gantt-row group"><span class="expand-icon">▼</span><span class="task-name">📁 CONSTRUCTION CONTRACT</span><span class="date-cell">Jul '26</span><span class="date-cell" style="color:var(--primary-light);font-weight:700">0%</span></div>
+
+          <div class="gantt-row"><span></span><span class="task-name task-indent">🏗️ Site Mobilisation</span><span class="date-cell">Jul '26</span><span class="date-cell">0%</span></div>
+          <div class="gantt-row"><span></span><span class="task-name task-indent">🪨 Civil — Foundations</span><span class="date-cell">Aug '26</span><span class="date-cell">0%</span></div>
+          <div class="gantt-row"><span></span><span class="task-name task-indent">🔩 Structural Steelwork</span><span class="date-cell">Oct '26</span><span class="date-cell">0%</span></div>
+          <div class="gantt-row"><span></span><span class="task-name task-indent">⚡ Electrical Installation</span><span class="date-cell">Jan '27</span><span class="date-cell">0%</span></div>
+          <div class="gantt-row"><span></span><span class="task-name task-indent">🔧 Equipment Installation</span><span class="date-cell">Feb '27</span><span class="date-cell">0%</span></div>
+          <div class="gantt-row milestone-row"><span></span><span class="task-name task-indent" style="color:var(--accent);font-weight:700">◆ Mech. Completion CHPP2B</span><span class="date-cell">May '27</span><span class="date-cell">—</span></div>
+          <div class="gantt-row milestone-row"><span></span><span class="task-name task-indent" style="color:var(--success);font-weight:700">◆ Performance Test Complete</span><span class="date-cell">Jul '27</span><span class="date-cell">—</span></div>
+        </div>
+
+        <!-- RIGHT PANEL — Chart Area -->
+        <div class="gantt-chart-area">
+          <div id="ganttChartInner" style="position:relative; min-width:900px;">
+
+            <!-- Time header -->
+            <div class="gantt-time-header" id="timeHeader"></div>
+
+            <!-- Gantt body with bars -->
+            <div class="gantt-body" id="ganttBody" style="position:relative;"></div>
+
+          </div>
+        </div>
+      </div><!-- /gantt-wrapper -->
+
+      <!-- Legend -->
+      <div class="gantt-legend">
+        <div class="legend-item"><div class="legend-bar" style="background:linear-gradient(90deg,#2563a8,#3b82f6);"></div> Planned (not started)</div>
+        <div class="legend-item"><div class="legend-bar" style="background:linear-gradient(90deg,#d97706,#f59e0b);"></div> In Progress</div>
+        <div class="legend-item"><div class="legend-bar" style="background:linear-gradient(90deg,#15803d,#22c55e);"></div> Complete</div>
+        <div class="legend-item"><div class="legend-bar" style="background:linear-gradient(90deg,#b91c1c,#ef4444);"></div> Delayed</div>
+        <div class="legend-item"><div style="width:30px;height:8px;background:repeating-linear-gradient(90deg,#7c3aed 0px,#7c3aed 5px,transparent 5px,transparent 8px);border:1.5px solid #7c3aed;border-radius:2px;"></div> Forecast (delayed tail)</div>
+        <div class="legend-item"><div class="legend-baseline"></div> Baseline</div>
+        <div class="legend-item"><div class="legend-diamond"></div> Milestone (upcoming)</div>
+        <div class="legend-item"><div class="legend-diamond" style="background:var(--success);border-color:#14532d;"></div> Achieved</div>
+        <div class="legend-item"><div class="legend-diamond" style="background:var(--danger);border-color:#7f1d1d;"></div> Missed</div>
+        <div class="legend-item"><div class="legend-today"></div> Today</div>
+        <div class="legend-item"><div class="legend-wet"></div> Wet Season Risk</div>
+      </div>
+    </div><!-- /gantt-section -->
+
+    <!-- DATA SCHEMA -->
+    <div class="card" style="margin-top:4px;">
+      <h3>📊 Source Data Schema — GANTT_Schedule_Master (Google Sheet)</h3>
+      <div style="overflow-x:auto;">
+        <table style="min-width:900px;">
+          <thead>
+            <tr>
+              <th>Column</th><th>Field Name</th><th>Type</th><th>Description</th><th>Required</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>A</td><td>WBS_ID</td><td>Text</td><td>Hierarchical WBS code e.g. 1.2.3.4</td><td><span class="tag tag-red">Required</span></td></tr>
+            <tr><td>B</td><td>Level</td><td>Integer (1–4)</td><td>Indent depth for collapsible hierarchy</td><td><span class="tag tag-red">Required</span></td></tr>
+            <tr><td>C</td><td>Activity_Name</td><td>Text</td><td>Task or milestone description</td><td><span class="tag tag-red">Required</span></td></tr>
+            <tr><td>D</td><td>Type</td><td>Enum: Task / Milestone / Group</td><td>Determines bar vs diamond rendering</td><td><span class="tag tag-red">Required</span></td></tr>
+            <tr><td>E</td><td>Party</td><td>Enum: EP / CC / All</td><td>Governing contractor for this activity</td><td><span class="tag tag-red">Required</span></td></tr>
+            <tr><td>F</td><td>Discipline</td><td>Text</td><td>e.g. Civil, Mechanical, Electrical, I&C</td><td><span class="tag tag-orange">Recommended</span></td></tr>
+            <tr><td>G</td><td>Baseline_Start</td><td>Date (DD-MMM-YY)</td><td>Original approved baseline start date</td><td><span class="tag tag-red">Required</span></td></tr>
+            <tr><td>H</td><td>Baseline_Finish</td><td>Date</td><td>Original approved baseline finish date</td><td><span class="tag tag-red">Required</span></td></tr>
+            <tr><td>I</td><td>Actual_Start</td><td>Date (blank if not started)</td><td>Actual commencement date</td><td><span class="tag tag-orange">Recommended</span></td></tr>
+            <tr><td>J</td><td>Forecast_Finish</td><td>Date</td><td>Latest forecast completion (updated weekly)</td><td><span class="tag tag-red">Required</span></td></tr>
+            <tr><td>K</td><td>Actual_Finish</td><td>Date (blank if not done)</td><td>Date activity was physically complete</td><td><span class="tag tag-orange">Recommended</span></td></tr>
+            <tr><td>L</td><td>Pct_Complete</td><td>Number (0–100)</td><td>Current % complete (physical progress)</td><td><span class="tag tag-red">Required</span></td></tr>
+            <tr><td>M</td><td>Weight</td><td>Number (0–100)</td><td>Activity weight for overall progress calc</td><td><span class="tag tag-orange">Recommended</span></td></tr>
+            <tr><td>N</td><td>Is_Critical</td><td>Boolean (TRUE/FALSE)</td><td>On critical path — renders red outline</td><td><span class="tag tag-orange">Recommended</span></td></tr>
+            <tr><td>O</td><td>Float_Days</td><td>Integer</td><td>Total float in calendar days</td><td><span class="tag tag-green">Optional</span></td></tr>
+            <tr><td>P</td><td>Predecessors</td><td>Text (e.g. "2.1.3,2.1.4")</td><td>WBS IDs of predecessor tasks (comma-separated)</td><td><span class="tag tag-green">Optional</span></td></tr>
+            <tr><td>Q</td><td>Dependency_Type</td><td>Enum: FS / SS / FF / SF</td><td>Link type for dependency arrow rendering</td><td><span class="tag tag-green">Optional</span></td></tr>
+            <tr><td>R</td><td>Status</td><td>Enum: On Track / At Risk / Delayed / Complete</td><td>RAG status for bar colour selection</td><td><span class="tag tag-red">Required</span></td></tr>
+            <tr><td>S</td><td>Remarks</td><td>Text</td><td>Free-text notes shown in hover tooltip</td><td><span class="tag tag-green">Optional</span></td></tr>
+            <tr><td>T</td><td>Last_Updated</td><td>Date</td><td>When this row was last edited — shown in audit trail</td><td><span class="tag tag-orange">Recommended</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- IMPLEMENTATION NOTES -->
+    <div class="grid-2" style="margin-top:16px;">
+      <div class="card">
+        <h3>⚙️ Implementation — Library Recommendation</h3>
+        <p style="margin-bottom:8px;">The Gantt chart is the most technically demanding module. Recommended rendering libraries in order of preference:</p>
+        <p><strong>1. DHTMLX Gantt (Community Edition)</strong> — most feature-complete open-source Gantt for the web. Supports baseline bars, dependencies, critical path natively. Free for open-source projects; commercial license ~$699/seat.</p>
+        <p><strong>2. Frappe Gantt</strong> — lightweight open-source, beautiful default styling, supports dependencies. Best for milestone-focused views. Limited to simpler WBS hierarchies.</p>
+        <p><strong>3. Custom D3.js Gantt</strong> — maximum flexibility; built from scratch using D3 scales and SVG. Higher development effort (~80 hrs) but perfectly tailored to CHPP2 data schema and branding.</p>
+        <p><strong>Recommendation:</strong> DHTMLX Gantt for Phase 1 (speed to market), migrate to D3 custom in Phase 3 if needed.</p>
+      </div>
+      <div class="card">
+        <h3>📅 Wet Season Logic — Automated Flag Rules</h3>
+        <p style="margin-bottom:8px;">The dashboard applies the following rules automatically when rendering the Gantt:</p>
+        <p><strong>Rule 1 — Delivery in Wet Window:</strong> Any task in GANTT_Schedule_Master with Discipline = "Logistics" AND Forecast_Finish falls between 01-Dec–28-Feb → auto-flagged with ⚠ orange icon and added to the Logistics Risk Alert panel.</p>
+        <p><strong>Rule 2 — Installation Delay:</strong> Any construction task with Baseline_Start in wet season + delayed status → flagged to PMC with recommended mitigation: "Consider pre-delivery storage at Puruk Cahu staging area."</p>
+        <p><strong>Rule 3 — Milestone in Wet Season:</strong> Any milestone with Baseline_Finish in Dec–Feb → auto-highlighted in Milestone Tracker with a note about Barito River flood risk impacting access.</p>
+      </div>
+      <div class="card">
+        <h3>🔄 Data Sync & Baseline Lock</h3>
+        <p><strong>Baseline lock:</strong> Columns G–H (Baseline dates) are <em>protected</em> in the Google Sheet — only the Employer Admin can unlock. This prevents accidental overwriting of the approved baseline.</p>
+        <p><strong>Sync frequency:</strong> Gantt data syncs every 6 hours via the standard sync engine. For real-time collaboration during progress meetings, a "Force Sync" button on the toolbar triggers an immediate pull.</p>
+        <p><strong>Baseline revision:</strong> When the Employer formally revises the baseline (via VO/approved schedule update), a new baseline snapshot is saved with a timestamp. Users can toggle between "Current Baseline" and "Original Baseline" in the toolbar.</p>
+      </div>
+      <div class="card">
+        <h3>📱 Responsive & Performance</h3>
+        <p><strong>Large schedule handling:</strong> CHPP2 master schedule may contain 300–500+ activities. Virtual rendering (only render rows in viewport) keeps the chart responsive even on 500-row schedules.</p>
+        <p><strong>Tablet mode:</strong> On screens ≤1024px, the task list collapses to show only Activity Name and %. Users can tap a row to expand the detail panel (dates, %, status) as an overlay.</p>
+        <p><strong>Print mode:</strong> "Export PDF" triggers a full-page landscape render at A3 size, paginated by WBS group. Page headers include project name, export date, and "CONFIDENTIAL" watermark.</p>
+        <p><strong>Offline mode:</strong> Last-synced Gantt data is cached in browser localStorage. If connection drops, the Gantt still renders with a "Last updated: [timestamp]" banner.</p>
+      </div>
+    </div>
+
+  </div><!-- /section 13 -->
+
+</div><!-- /container -->
+
+<!-- GANTT RENDERING SCRIPT -->
+<script>
+(function() {
+  // ── Configuration ──────────────────────────────────────
+  const COL_W = 42; // px per 2-week period
+  const ROW_H = 34;
+
+  // Project window: Mar 2026 – Aug 2027 (18 months)
+  const START_DATE = new Date(2026, 2, 1); // Mar 1 2026
+  const END_DATE   = new Date(2027, 7, 31); // Aug 31 2027
+  const TODAY      = new Date(2026, 2, 1); // Simulate today = Mar 1 2026
+
+  // Generate quarter/month columns
+  function monthsBetween(a, b) {
+    const months = [];
+    let d = new Date(a.getFullYear(), a.getMonth(), 1);
+    while (d <= b) {
+      months.push(new Date(d));
+      d.setMonth(d.getMonth() + 1);
+    }
+    return months;
+  }
+
+  const months = monthsBetween(START_DATE, END_DATE);
+  const TOTAL_DAYS = (END_DATE - START_DATE) / (1000*60*60*24);
+  const CHART_W = Math.round(months.length * COL_W);
+
+  function dayOffset(date) {
+    const ms = new Date(date) - START_DATE;
+    return Math.max(0, (ms / (1000*60*60*24)) / TOTAL_DAYS * CHART_W);
+  }
+  function dateToPx(date) {
+    return dayOffset(date);
+  }
+  function durationPx(start, end) {
+    const s = new Date(start), e = new Date(end);
+    return Math.max(6, dateToPx(e) - dateToPx(s));
+  }
+
+  const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // ── Render time header ─────────────────────────────────
+  const header = document.getElementById('timeHeader');
+  if (!header) return;
+  header.style.minWidth = CHART_W + 'px';
+
+  // Group by quarter row + month row
+  let headerHtml = '';
+  // Quarter labels
+  const quarters = {};
+  months.forEach(m => {
+    const q = 'Q' + (Math.floor(m.getMonth()/3)+1) + ' ' + m.getFullYear();
+    quarters[q] = (quarters[q]||0) + 1;
+  });
+
+  headerHtml += '<div style="display:flex;width:100%;border-bottom:1px solid #2d5a8e;">';
+  Object.entries(quarters).forEach(([q, cnt]) => {
+    headerHtml += `<div style="flex:0 0 ${cnt*COL_W}px;text-align:center;padding:3px 0;font-size:10px;border-right:1px solid #2d5a8e;">${q}</div>`;
+  });
+  headerHtml += '</div>';
+
+  headerHtml += '<div style="display:flex;width:100%;">';
+  months.forEach(m => {
+    headerHtml += `<div class="month-col" style="flex:0 0 ${COL_W}px;">${MONTH_NAMES[m.getMonth()]}</div>`;
+  });
+  headerHtml += '</div>';
+  header.innerHTML = headerHtml;
+
+  // ── Task data ──────────────────────────────────────────
+  const tasks = [
+    // EP CONTRACT group
+    { group:true, label:'📁 EP CONTRACT', bl_s:'2026-03-01', bl_e:'2027-01-31', act_s:'2026-03-01', fore_e:'2027-02-15', pct:22, status:'inprogress' },
+    { label:'Basic Engineering Design',    bl_s:'2026-03-01', bl_e:'2026-06-30', act_s:'2026-03-01', fore_e:'2026-07-15', pct:65, status:'inprogress' },
+    { label:'Detailed Engineering',        bl_s:'2026-05-01', bl_e:'2026-10-31', act_s:'2026-05-15', fore_e:'2026-11-15', pct:5,  status:'planned' },
+    { label:'— Civil/Structural Design',   bl_s:'2026-05-01', bl_e:'2026-09-30', act_s:'2026-05-15', fore_e:'2026-10-15', pct:8,  status:'planned', sub:true },
+    { label:'— Mech/Elec/I&C Design',      bl_s:'2026-06-01', bl_e:'2026-10-31', act_s:null,         fore_e:'2026-11-30', pct:2,  status:'planned', sub:true },
+    { label:'Procurement — Long Lead',     bl_s:'2026-03-01', bl_e:'2026-09-30', act_s:'2026-03-01', fore_e:'2026-10-31', pct:35, status:'inprogress' },
+    { label:'Jaw Crusher (CHPP2A)',         bl_s:'2026-03-01', bl_e:'2026-07-31', act_s:'2026-03-01', fore_e:'2026-07-31', pct:70, status:'inprogress', sub:true },
+    { label:'⚠ Dense Media Vessel',         bl_s:'2026-04-01', bl_e:'2026-08-31', act_s:'2026-04-15', fore_e:'2026-10-15', pct:20, status:'delayed',    sub:true },
+    { label:'Thickener (×2, dome)',          bl_s:'2026-05-01', bl_e:'2026-09-30', act_s:null,         fore_e:'2026-10-31', pct:10, status:'planned',     sub:true },
+    { label:'Radial Stacker',               bl_s:'2026-04-01', bl_e:'2026-08-31', act_s:'2026-04-01', fore_e:'2026-09-15', pct:40, status:'inprogress',  sub:true },
+    { label:'Logistics & Site Delivery',   bl_s:'2026-10-01', bl_e:'2026-12-31', act_s:null,         fore_e:'2027-01-31', pct:0,  status:'planned' },
+    { label:'Commissioning — CHPP2A',      bl_s:'2027-01-01', bl_e:'2027-03-31', act_s:null,         fore_e:'2027-04-30', pct:0,  status:'planned' },
+    { milestone:true, label:'◆ Mech. Completion CHPP2A', date:'2027-02-28', status:'upcoming' },
+    // Construction group
+    { group:true, label:'📁 CONSTRUCTION CONTRACT', bl_s:'2026-07-01', bl_e:'2027-05-31', act_s:null, fore_e:'2027-06-30', pct:0, status:'planned' },
+    { label:'Site Mobilisation',           bl_s:'2026-07-01', bl_e:'2026-08-31', act_s:null, fore_e:'2026-08-31', pct:0, status:'planned' },
+    { label:'Civil — Foundations',         bl_s:'2026-08-01', bl_e:'2026-11-30', act_s:null, fore_e:'2026-12-31', pct:0, status:'planned' },
+    { label:'Structural Steelwork',        bl_s:'2026-10-01', bl_e:'2027-01-31', act_s:null, fore_e:'2027-02-28', pct:0, status:'planned' },
+    { label:'Electrical Installation',     bl_s:'2027-01-01', bl_e:'2027-03-31', act_s:null, fore_e:'2027-04-30', pct:0, status:'planned' },
+    { label:'Equipment Installation',      bl_s:'2027-02-01', bl_e:'2027-04-30', act_s:null, fore_e:'2027-05-31', pct:0, status:'planned' },
+    { milestone:true, label:'◆ Mech. Completion CHPP2B', date:'2027-05-31', status:'upcoming' },
+    { milestone:true, label:'◆ Performance Test Complete', date:'2027-07-31', status:'upcoming', done:true },
+  ];
+
+  const statusColor = {
+    'inprogress': 'linear-gradient(90deg,#d97706,#f59e0b)',
+    'planned':    'linear-gradient(90deg,#2563a8,#3b82f6)',
+    'delayed':    'linear-gradient(90deg,#b91c1c,#ef4444)',
+    'done':       'linear-gradient(90deg,#15803d,#22c55e)',
+    'complete':   'linear-gradient(90deg,#15803d,#22c55e)',
+  };
+
+  const body = document.getElementById('ganttBody');
+  body.style.minWidth = CHART_W + 'px';
+
+  // Wet season bands
+  const wetSeasons = [
+    { s:'2026-12-01', e:'2027-02-28' }
+  ];
+
+  let bodyHtml = `<div style="position:relative;width:${CHART_W}px;">`;
+
+  // Vertical grid lines (monthly)
+  months.forEach((m, i) => {
+    const x = Math.round(i * COL_W);
+    bodyHtml += `<div class="v-gridline" style="left:${x}px;"></div>`;
+  });
+
+  // Wet season bands
+  wetSeasons.forEach(ws => {
+    const x1 = dateToPx(ws.s);
+    const x2 = dateToPx(ws.e);
+    bodyHtml += `<div class="wet-season-band" style="left:${x1}px;width:${x2-x1}px;">`;
+    bodyHtml += `<div class="wet-season-label" style="left:${(x2-x1)/2}px;">🌧️ Wet Season</div>`;
+    bodyHtml += `</div>`;
+  });
+
+  // Today line
+  const todayX = dateToPx(TODAY);
+  bodyHtml += `<div class="today-line" style="left:${todayX}px;height:${tasks.length * ROW_H}px;">`;
+  bodyHtml += `<div class="today-label" style="left:0;">TODAY</div></div>`;
+
+  // Render rows
+  tasks.forEach((t, i) => {
+    const top = i * ROW_H;
+    const rowClass = t.group ? 'group' : (t.milestone ? 'milestone-row' : '');
+
+    bodyHtml += `<div class="gantt-bar-row ${rowClass}" style="position:absolute;top:${top}px;width:100%;height:${ROW_H}px;">`;
+
+    if (t.milestone) {
+      // Diamond
+      const dx = dateToPx(t.date);
+      const dColor = t.done ? 'var(--success)' : (t.status==='late' ? 'var(--danger)' : 'var(--accent)');
+      const dBorder = t.done ? '#14532d' : (t.status==='late' ? '#7f1d1d' : '#b45309');
+      bodyHtml += `<div title="${t.label} — ${t.date}" style="position:absolute;left:${dx-6}px;top:50%;margin-top:-7px;width:14px;height:14px;background:${dColor};transform:rotate(45deg);border:2px solid ${dBorder};border-radius:1px;z-index:5;cursor:pointer;"></div>`;
+      // Label
+      bodyHtml += `<div style="position:absolute;left:${dx+12}px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;color:${dColor};white-space:nowrap;">${t.date.slice(0,7)}</div>`;
+    } else {
+      // Baseline bar
+      if (t.bl_s && t.bl_e) {
+        const bx = dateToPx(t.bl_s);
+        const bw = durationPx(t.bl_s, t.bl_e);
+        bodyHtml += `<div class="bar-baseline" style="left:${bx}px;width:${bw}px;"></div>`;
+      }
+
+      // Actual / forecast bar
+      const actStart = t.act_s || t.bl_s;
+      const actEnd   = t.fore_e || t.bl_e;
+      const ax = dateToPx(actStart);
+      const aw = durationPx(actStart, actEnd);
+      const bg = statusColor[t.status] || statusColor['planned'];
+      const isDelayed = t.status === 'delayed';
+      const h = t.group ? 16 : 12;
+      const top_bar = t.group ? 9 : 11;
+
+      bodyHtml += `<div title="${t.label || ''} — ${t.pct}% complete${isDelayed ? ' (DELAYED)' : ''}"
+        style="position:absolute;left:${ax}px;width:${aw}px;height:${h}px;top:${top_bar}px;
+        background:${bg};border-radius:3px;z-index:2;cursor:pointer;
+        ${isDelayed ? 'box-shadow:0 0 0 2px #ef4444;' : ''}
+        ${t.group ? 'opacity:0.75;' : ''}">
+      </div>`;
+
+      // % complete fill (darker overlay)
+      if (t.pct > 0 && !t.group) {
+        const fw = aw * t.pct / 100;
+        bodyHtml += `<div style="position:absolute;left:${ax}px;width:${fw}px;height:${h}px;top:${top_bar}px;
+          background:rgba(0,0,0,0.2);border-radius:3px 0 0 3px;z-index:3;pointer-events:none;"></div>`;
+      }
+
+      // % label
+      if (t.pct > 0 && aw > 40) {
+        bodyHtml += `<div style="position:absolute;left:${ax+4}px;top:${top_bar+1}px;font-size:9px;font-weight:700;color:#fff;z-index:4;pointer-events:none;">${t.pct}%</div>`;
+      }
+
+      // Critical path marker (demo: first few tasks)
+      if (i === 1 || i === 11 || i === 12) {
+        bodyHtml += `<div style="position:absolute;left:${ax-1}px;width:${aw+2}px;height:${h+2}px;top:${top_bar-1}px;border:2px solid #ef4444;border-radius:4px;z-index:5;pointer-events:none;"></div>`;
+        bodyHtml += `<div style="position:absolute;left:${ax}px;top:${top_bar-11}px;font-size:8px;font-weight:700;color:#ef4444;z-index:6;">CP</div>`;
+      }
+    }
+
+    bodyHtml += `</div>`; // .gantt-bar-row
+  });
+
+  bodyHtml += '</div>';
+  body.innerHTML = bodyHtml;
+
+  // Fix outer height
+  body.style.height = (tasks.length * ROW_H) + 'px';
+
+})();
+</script>
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <strong>CHPP2 Project Dashboard — Development Workflow | CHPP2-DASH-WF-001 Rev B</strong><br>
+  PT Maruwai Coal (Adaro Group) · Lampunut Mine, Central Kalimantan, Indonesia<br>
+  Prepared: March 2026 · Classification: CONFIDENTIAL — Employer Use Only
+</div>
+
+</body>
+</html>

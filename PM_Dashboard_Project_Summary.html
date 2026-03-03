@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PM Dashboard — Project Summary & Build Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  :root {
+    --primary: #1e3a8a;
+    --primary-mid: #1a56db;
+    --primary-light: #dbeafe;
+    --accent: #f59e0b;
+    --success: #10b981;
+    --success-light: #d1fae5;
+    --warning: #d97706;
+    --warning-light: #fef3c7;
+    --danger: #dc2626;
+    --danger-light: #fee2e2;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --pink: #db2777;
+    --gray: #64748b;
+    --border: #e2e8f0;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --text-secondary: #475569;
+    --code-bg: #0f172a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 14px; }
+
+  /* COVER PAGE */
+  .cover { background: linear-gradient(145deg, #0f172a 0%, #1e3a8a 45%, #1a56db 100%); color: #fff; padding: 5rem 3rem 4rem; min-height: 320px; position: relative; overflow: hidden; }
+  .cover::before { content: ''; position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: rgba(255,255,255,.04); border-radius: 50%; }
+  .cover::after { content: ''; position: absolute; bottom: -80px; left: -30px; width: 200px; height: 200px; background: rgba(255,255,255,.03); border-radius: 50%; }
+  .cover-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+  .cover-tag { display: inline-flex; align-items: center; gap: .5rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); border-radius: 20px; padding: .3rem 1rem; font-size: .78rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .cover h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.15; margin-bottom: 1rem; }
+  .cover h1 span { color: #93c5fd; }
+  .cover p { font-size: 1.05rem; opacity: .8; max-width: 600px; margin-bottom: 2rem; }
+  .cover-meta { display: flex; gap: 2rem; flex-wrap: wrap; }
+  .cover-meta-item { display: flex; flex-direction: column; gap: .2rem; }
+  .cover-meta-item label { font-size: .72rem; opacity: .6; text-transform: uppercase; letter-spacing: .08em; }
+  .cover-meta-item span { font-weight: 600; font-size: .9rem; }
+  .cover-badges { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 2rem; }
+  .cover-badge { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); border-radius: 6px; padding: .25rem .75rem; font-size: .78rem; font-weight: 500; }
+  .cover-badge.accent { background: var(--accent); color: #000; border-color: var(--accent); }
+
+  /* LAYOUT */
+  .main { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  /* TOC */
+  .toc { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; margin-bottom: 3rem; box-shadow: 0 2px 12px rgba(0,0,0,.05); }
+  .toc h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--primary); display: flex; align-items: center; gap: .6rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: .3rem; }
+  .toc-item { display: flex; align-items: center; gap: .75rem; padding: .45rem .5rem; border-radius: 7px; color: var(--text-secondary); font-size: .88rem; transition: background .15s; }
+  .toc-item:hover { background: var(--bg); color: var(--primary); }
+  .toc-num { background: var(--primary-light); color: var(--primary); border-radius: 5px; padding: .1rem .45rem; font-size: .72rem; font-weight: 700; flex-shrink: 0; }
+
+  /* SECTIONS */
+  .section { margin-bottom: 3.5rem; }
+  .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.75rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border); }
+  .section-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .section-header h2 { font-size: 1.45rem; font-weight: 800; }
+  .section-header .section-sub { font-size: .85rem; color: var(--gray); margin-top: .15rem; font-weight: 400; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+  .card-title { font-weight: 700; font-size: 1rem; margin-bottom: .6rem; display: flex; align-items: center; gap: .6rem; }
+  .card-body { font-size: .9rem; color: var(--text-secondary); }
+  .card-body p { margin-bottom: .5rem; }
+  .card-body ul, .card-body ol { padding-left: 1.25rem; margin: .5rem 0; }
+  .card-body li { margin-bottom: .3rem; }
+  .card.accent-left { border-left: 4px solid var(--primary-mid); }
+  .card.accent-left.green { border-left-color: var(--success); }
+  .card.accent-left.yellow { border-left-color: var(--warning); }
+  .card.accent-left.red { border-left-color: var(--danger); }
+  .card.accent-left.purple { border-left-color: var(--purple); }
+  .card.accent-left.teal { border-left-color: var(--teal); }
+  .card.accent-left.pink { border-left-color: var(--pink); }
+
+  /* STEP CARDS */
+  .step { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.4rem 1.4rem 1.4rem 1rem; margin-bottom: .85rem; display: grid; grid-template-columns: auto 1fr; gap: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+  .step-badge { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .78rem; color: #fff; flex-shrink: 0; background: var(--primary-mid); }
+  .step-content {}
+  .step-title { font-weight: 700; font-size: .95rem; margin-bottom: .4rem; }
+  .step-desc { font-size: .87rem; color: var(--text-secondary); }
+  .step-desc p { margin-bottom: .35rem; }
+  .step-desc ul { padding-left: 1.1rem; margin: .35rem 0; }
+  .step-desc li { margin-bottom: .25rem; }
+
+  /* CALLOUTS */
+  .callout { border-radius: 10px; padding: .9rem 1.1rem; margin: 1rem 0; display: flex; gap: .75rem; }
+  .callout.info { background: #eff6ff; border-left: 4px solid #3b82f6; }
+  .callout.tip { background: var(--success-light); border-left: 4px solid var(--success); }
+  .callout.warn { background: var(--warning-light); border-left: 4px solid var(--warning); }
+  .callout.rule { background: #fdf4ff; border-left: 4px solid #a855f7; }
+  .callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .1rem; }
+  .callout-body strong { display: block; font-size: .88rem; margin-bottom: .2rem; }
+  .callout-body p, .callout-body li { font-size: .86rem; color: #374151; }
+  .callout-body ul { padding-left: 1rem; margin: .25rem 0; }
+
+  /* CODE */
+  .code { background: var(--code-bg); color: #e2e8f0; border-radius: 10px; padding: 1.1rem 1.25rem; margin: .75rem 0; font-family: 'Courier New', Consolas, monospace; font-size: .78rem; line-height: 1.65; overflow-x: auto; white-space: pre-wrap; position: relative; }
+  .code-label { display: inline-block; background: rgba(255,255,255,.1); color: #94a3b8; border-radius: 4px; padding: .1rem .5rem; font-size: .68rem; font-family: 'Inter', sans-serif; margin-bottom: .75rem; }
+
+  /* TABLES */
+  .tbl { width: 100%; border-collapse: collapse; font-size: .85rem; margin: 1rem 0; }
+  .tbl th { background: var(--primary); color: #fff; padding: .6rem .9rem; text-align: left; font-weight: 600; font-size: .82rem; }
+  .tbl td { padding: .55rem .9rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl tr:nth-child(even) td { background: var(--bg); }
+  .tbl-wrap { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1rem 0; }
+
+  /* GRIDS */
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .75rem; }
+
+  /* ARCH DIAGRAM */
+  .arch { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; margin: 1.25rem 0; }
+  .arch-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: .6rem 0; flex-wrap: wrap; }
+  .arch-box { border: 2px solid #3b82f6; border-radius: 10px; padding: .55rem 1rem; font-weight: 600; font-size: .82rem; background: #eff6ff; line-height: 1.35; }
+  .arch-box.or { background: #fff7ed; border-color: #f97316; }
+  .arch-box.gr { background: #f0fdf4; border-color: #22c55e; }
+  .arch-box.pu { background: #faf5ff; border-color: #a855f7; }
+  .arch-box.ye { background: #fefce8; border-color: #eab308; }
+  .arch-box.re { background: #fef2f2; border-color: #ef4444; }
+  .arch-arr { font-size: 1.3rem; color: var(--gray); }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { padding: .38rem 0; display: flex; align-items: flex-start; gap: .75rem; font-size: .9rem; border-bottom: 1px solid #f1f5f9; }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before { content: '☐'; color: var(--primary-mid); font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+
+  /* STATUS BADGES */
+  .badge { display: inline-flex; align-items: center; gap: .3rem; border-radius: 6px; padding: .15rem .6rem; font-size: .75rem; font-weight: 600; }
+  .badge.blue { background: var(--primary-light); color: var(--primary); }
+  .badge.green { background: var(--success-light); color: #065f46; }
+  .badge.yellow { background: var(--warning-light); color: #92400e; }
+  .badge.red { background: var(--danger-light); color: #991b1b; }
+  .badge.purple { background: var(--purple-light); color: #5b21b6; }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 2px solid var(--border); margin: 2.5rem 0; }
+
+  /* PILL TAGS */
+  .pills { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
+  .pill { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: .2rem .7rem; font-size: .75rem; font-weight: 500; color: var(--text-secondary); }
+
+  /* VERSION HISTORY */
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before { content: ''; position: absolute; left: .5rem; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .timeline-item { position: relative; margin-bottom: 1.25rem; }
+  .timeline-item::before { content: ''; position: absolute; left: -1.6rem; top: .4rem; width: 10px; height: 10px; border-radius: 50%; background: var(--primary-mid); border: 2px solid var(--card); box-shadow: 0 0 0 2px var(--primary-mid); }
+  .timeline-item-title { font-weight: 700; font-size: .92rem; margin-bottom: .25rem; }
+  .timeline-item-body { font-size: .84rem; color: var(--text-secondary); }
+
+  /* FOOTER */
+  footer { background: var(--primary); color: rgba(255,255,255,.75); text-align: center; padding: 2rem 1rem; font-size: .82rem; margin-top: 0; }
+  footer strong { color: #fff; }
+
+  /* PRINT */
+  @media print {
+    .cover { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .section { page-break-inside: avoid; }
+    body { font-size: 12px; }
+    .main { padding: 1rem; }
+  }
+
+  @media (max-width: 640px) {
+    .cover h1 { font-size: 1.8rem; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .step { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-tag">📋 Project Documentation</div>
+    <h1>Interactive Project Management<br><span>Dashboard — Build Guide</span></h1>
+    <p>Complete technical specification, architecture decisions, implementation steps, and operational guidelines for the custom web-based PM dashboard.</p>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><label>Document Type</label><span>Technical Build Guide</span></div>
+      <div class="cover-meta-item"><label>Stack</label><span>Firebase · Power Automate · Claude Code · Gemini AI</span></div>
+      <div class="cover-meta-item"><label>Status</label><span>Active — In Development</span></div>
+    </div>
+    <div class="cover-badges">
+      <span class="cover-badge">📊 S-Curve &amp; Gantt</span>
+      <span class="cover-badge">⚠️ Risk Register</span>
+      <span class="cover-badge">🐛 Issue Register</span>
+      <span class="cover-badge">🛒 Procurement</span>
+      <span class="cover-badge">💰 Budget Tracker</span>
+      <span class="cover-badge accent">🔥 Firebase + Power Automate + AI</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- TOC -->
+<div class="toc">
+  <h2>📑 Contents</h2>
+  <div class="toc-grid">
+    <div class="toc-item"><span class="toc-num">1</span> System Architecture</div>
+    <div class="toc-item"><span class="toc-num">2</span> Technology Stack</div>
+    <div class="toc-item"><span class="toc-num">3</span> Account Setup (Phase 0)</div>
+    <div class="toc-item"><span class="toc-num">4</span> Frontend — All 6 Modules (Phase 1)</div>
+    <div class="toc-item"><span class="toc-num">5</span> Firebase Backend (Phase 2)</div>
+    <div class="toc-item"><span class="toc-num">6</span> Data Entry — Excel + Power Automate (Phase 3)</div>
+    <div class="toc-item"><span class="toc-num">7</span> AI Executive Summary — Gemini (Phase 4)</div>
+    <div class="toc-item"><span class="toc-num">8</span> Deployment (Phase 5)</div>
+    <div class="toc-item"><span class="toc-num">9</span> Module Release Cycle (Repeatable Checklist)</div>
+    <div class="toc-item"><span class="toc-num">10</span> Schema Change Management</div>
+    <div class="toc-item"><span class="toc-num">11</span> Access Control &amp; Security</div>
+    <div class="toc-item"><span class="toc-num">12</span> Data Entry Method — Final Decision</div>
+    <div class="toc-item"><span class="toc-num">13</span> Additional Considerations</div>
+    <div class="toc-item"><span class="toc-num">14</span> Excel Database Structure</div>
+    <div class="toc-item"><span class="toc-num">15</span> Pre-Launch Master Checklist</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 1: ARCHITECTURE -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#dbeafe;">🏗️</div>
+    <div><h2>1. System Architecture</h2><div class="section-sub">How all components connect end-to-end</div></div>
+  </div>
+
+  <div class="arch">
+    <div class="arch-row">
+      <div class="arch-box pu">👤 Project Team<br><small>Excel Editors (Teams)</small></div>
+      <div class="arch-arr">→</div>
+      <div class="arch-box ye">📊 Excel Files<br><small>OneDrive / SharePoint</small></div>
+      <div class="arch-arr">→</div>
+      <div class="arch-box or">⚡ Power Automate<br><small>Sync Flows</small></div>
+      <div class="arch-arr">→</div>
+      <div class="arch-box gr">🔥 Firebase<br><small>Firestore Database</small></div>
+    </div>
+    <div style="margin:.5rem 0; color:var(--gray); font-size:.8rem; font-style:italic;">— Risk &amp; Issue data enters directly from dashboard —</div>
+    <div class="arch-row">
+      <div class="arch-box re">🌐 Web Dashboard<br><small>Read-Only Visualization</small></div>
+      <div class="arch-arr">↔</div>
+      <div class="arch-box gr">🔥 Firebase<br><small>Real-time onSnapshot()</small></div>
+      <div class="arch-arr">↔</div>
+      <div class="arch-box or">🤖 Google AI Studio<br><small>Gemini Executive Summary</small></div>
+    </div>
+  </div>
+
+  <div class="callout rule">
+    <div class="callout-icon">📌</div>
+    <div class="callout-body">
+      <strong>Core Architecture Principle</strong>
+      <p><strong>Excel is the master. Firebase is the mirror. The dashboard is the screen.</strong> Data only flows one direction: Excel → Power Automate → Firebase → Dashboard. The dashboard never writes back to Excel. The only exception is Risk Register and Issue Register, which write directly to Firebase from the dashboard interface.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card accent-left">
+      <div class="card-title">📥 Data Entry Points</div>
+      <div class="card-body">
+        <ul>
+          <li><strong>Excel on OneDrive/Teams</strong> — Tasks, S-Curve, Procurement, Budget</li>
+          <li><strong>Dashboard inline forms</strong> — Risk Register, Issue Register only</li>
+          <li><strong>Firebase Console</strong> — Admin/emergency corrections only</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card accent-left green">
+      <div class="card-title">📤 Data Flow</div>
+      <div class="card-body">
+        <ul>
+          <li>Excel save → Power Automate trigger (new rows, instant)</li>
+          <li>Scheduled full-sync daily at 6AM (catches edits)</li>
+          <li>Risk/Issue forms → Firebase directly (real-time)</li>
+          <li>Dashboard reads Firebase via onSnapshot() (live)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 2: TECH STACK -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#ede9fe;">🛠️</div>
+    <div><h2>2. Technology Stack</h2><div class="section-sub">Every tool, what it does, and why it was chosen</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <tr><th>Tool</th><th>Role</th><th>Why Chosen</th><th>Cost</th></tr>
+      <tr><td><strong>Claude Code</strong> (claude.ai)</td><td>Writes all frontend code from plain-English prompts</td><td>No coding experience needed — describe what you want, get working code</td><td>Free tier available</td></tr>
+      <tr><td><strong>Firebase Firestore</strong></td><td>Cloud real-time database (backend)</td><td>No server to manage, free tier generous, live sync built-in via onSnapshot()</td><td>Free up to 50K reads/day</td></tr>
+      <tr><td><strong>Firebase Hosting</strong></td><td>Publishes dashboard to a live URL</td><td>One command deploy, free SSL, CDN-distributed globally</td><td>Free up to 10GB/month bandwidth</td></tr>
+      <tr><td><strong>Google AI Studio (Gemini)</strong></td><td>AI-generated executive summaries and risk analysis</td><td>Free tier generous, integrates easily via REST API, no server needed</td><td>Free (15 req/min)</td></tr>
+      <tr><td><strong>Excel on OneDrive</strong></td><td>Primary data entry interface for project team</td><td>Team already knows Excel, works inside Microsoft Teams, no training needed</td><td>Included in M365</td></tr>
+      <tr><td><strong>Power Automate</strong></td><td>Syncs Excel changes to Firebase automatically</td><td>No-code pipeline, triggers on Excel table changes, native M365 integration</td><td>750 runs/month free per user</td></tr>
+      <tr><td><strong>Chart.js</strong></td><td>S-Curve, Budget, Issue aging charts</td><td>Free, lightweight, excellent documentation, loads from CDN</td><td>Free</td></tr>
+      <tr><td><strong>DHTMLX Gantt</strong></td><td>Gantt chart module</td><td>Best-in-class free Gantt library for web, handles baselines and milestones</td><td>Free (open-source)</td></tr>
+      <tr><td><strong>VS Code</strong></td><td>Code editor for managing index.html</td><td>Free, color-highlighted code, easy file management</td><td>Free</td></tr>
+    </table>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 3: PHASE 0 — ACCOUNTS -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#ccfbf1;">⚙️</div>
+    <div><h2>3. Phase 0 — Account Setup</h2><div class="section-sub">Create all accounts before building anything — estimated 30 minutes</div></div>
+  </div>
+
+  <div class="step">
+    <div class="step-badge" style="background:#0d9488;">0.1</div>
+    <div class="step-content">
+      <div class="step-title">Google Account</div>
+      <div class="step-desc"><p>Go to <strong>accounts.google.com</strong>. Use this single account for Firebase, Google AI Studio, and Google Forms — everything in this project.</p></div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge" style="background:#0d9488;">0.2</div>
+    <div class="step-content">
+      <div class="step-title">Claude.ai Account</div>
+      <div class="step-desc"><p>Go to <strong>claude.ai</strong> → Sign up (free). This is your AI code writer. Type instructions in plain English, copy the code it generates, paste into your project files.</p></div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge" style="background:#0d9488;">0.3</div>
+    <div class="step-content">
+      <div class="step-title">Google AI Studio — Get API Key</div>
+      <div class="step-desc">
+        <p>Go to <strong>aistudio.google.com</strong> → "Get API key" → "Create API key". Save this key securely — it enables AI summaries in your dashboard.</p>
+        <div class="callout warn" style="margin-top:.5rem;"><div class="callout-icon">⚠️</div><div class="callout-body"><p>API key = password. Never post it publicly or commit it to GitHub.</p></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge" style="background:#0d9488;">0.4</div>
+    <div class="step-content">
+      <div class="step-title">Firebase — Create Project &amp; Database</div>
+      <div class="step-desc">
+        <ol>
+          <li>Go to <strong>console.firebase.google.com</strong> → "Create a project" → name: <code>PM-Dashboard-2025</code></li>
+          <li>Click <strong>Firestore Database</strong> → "Create database" → <strong>"Start in test mode"</strong></li>
+          <li>Click ⚙️ → Project settings → Your apps → <code>&lt;/&gt;</code> web icon → register app → <strong>copy and save the config object</strong></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 4: FRONTEND MODULES -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#ede9fe;">🎨</div>
+    <div><h2>4. Phase 1 — Frontend Dashboard (6 Modules)</h2><div class="section-sub">All built as a single index.html file using Claude Code prompts</div></div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">📁</div>
+    <div class="callout-body">
+      <strong>Project File Structure</strong>
+      <p>Create one folder called <code>pm-dashboard</code> on your computer. Inside it, one file: <code>index.html</code>. That is your entire project. Claude Code writes all the code inside this file.</p>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">🔢</div>
+    <div class="callout-body">
+      <strong>Recommended Build Order</strong>
+      <p>Gantt Chart → Risk Register → Issue Register → Procurement → Budget → S-Curve → Executive Summary (last — it pulls from all others)</p>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <tr><th>#</th><th>Module</th><th>Key Features</th><th>Charts / Libraries</th></tr>
+      <tr>
+        <td><span class="badge blue">1</span></td>
+        <td><strong>Executive Summary</strong></td>
+        <td>4 KPI cards (status, % complete, days remaining, budget used), 4 metric cards (tasks, risks, issues, procurement), AI Insight box with "Generate Summary" button</td>
+        <td>Chart.js (circular progress ring), Gemini API</td>
+      </tr>
+      <tr>
+        <td><span class="badge purple">2</span></td>
+        <td><strong>S-Curve</strong></td>
+        <td>Planned vs Actual vs Forecast lines, Schedule Variance + SPI display, toggle between Physical and Cost progress views</td>
+        <td>Chart.js (line chart)</td>
+      </tr>
+      <tr>
+        <td><span class="badge green">3</span></td>
+        <td><strong>Gantt Chart</strong></td>
+        <td>Task name / responsible / % complete columns, month/week toggle, color-coded bars (blue/green/red/gray), today line, baselines, milestones, filter bar, search</td>
+        <td>DHTMLX Gantt (free CDN)</td>
+      </tr>
+      <tr>
+        <td><span class="badge yellow">4</span></td>
+        <td><strong>Activity Tracker</strong></td>
+        <td><strong>Procurement sub-tab:</strong> full table with colored status badges, summary bar. <strong>Budget sub-tab:</strong> 3 KPI cards, stacked bar chart by category, variance table with red/green coloring</td>
+        <td>Chart.js (stacked bar)</td>
+      </tr>
+      <tr>
+        <td><span class="badge red">5</span></td>
+        <td><strong>Risk Register</strong></td>
+        <td>5×5 heat map (clickable cells filter table), 4 summary cards, full risk table with sortable columns, add/edit side panel (writes to Firebase), filters by category/level/owner/status</td>
+        <td>Custom CSS grid heat map</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#fdf4ff;color:#7c3aed;">6</span></td>
+        <td><strong>Issue Register</strong></td>
+        <td>4 summary cards including avg days to close, full issue table, aging chart (0-7, 8-30, 31-60, 60+ days), add/edit side panel (writes to Firebase), date range filter</td>
+        <td>Chart.js (horizontal bar)</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card accent-left purple" style="margin-top:1rem;">
+    <div class="card-title">🏗️ How to Build Each Module with Claude Code</div>
+    <div class="card-body">
+      <ol>
+        <li>Open claude.ai → paste the module prompt (detailed in original guide)</li>
+        <li>Copy the code Claude generates</li>
+        <li><strong>Before pasting:</strong> save backup <code>index_v[N]_before_[module].html</code></li>
+        <li>Paste new HTML into correct tab section in index.html</li>
+        <li>Merge new CSS into the existing <code>&lt;style&gt;</code> block (no duplicates)</li>
+        <li>Merge new JavaScript into the existing <code>&lt;script&gt;</code> block</li>
+        <li>Open in browser → verify it renders with sample data</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 5: FIREBASE BACKEND -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#d1fae5;">🔥</div>
+    <div><h2>5. Phase 2 — Firebase Backend</h2><div class="section-sub">Real-time database connection — data updates the dashboard within seconds</div></div>
+  </div>
+
+  <div class="card accent-left green">
+    <div class="card-title">📁 Firestore Collection Structure</div>
+    <div class="card-body">
+      <div class="code"><span class="code-label">Firestore</span>📁 Firestore Database
+├── tasks/       { task_id, task_name, phase, responsible, planned_start, planned_finish,
+│                  actual_start, actual_finish, percent_complete, status, notes }
+├── risks/       { risk_id, description, category, likelihood, impact, owner,
+│                  mitigation_action, status, last_updated }
+├── issues/      { issue_id, date_raised, title, category, priority, raised_by,
+│                  assigned_to, due_date, status, resolution }
+├── procurement/ { item_id, item_name, vendor, po_number, order_date,
+│                  expected_delivery, actual_delivery, status, value_usd, notes }
+├── budget/      { category_id, category_name, wbs_code, budget_amount,
+│                  committed_amount, actual_spent, forecast_final }
+└── scurve/      { month, planned_physical, actual_physical, planned_cost,
+                   actual_cost, forecast_physical }</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card accent-left green">
+      <div class="card-title">⚡ Firebase SDK Functions Required</div>
+      <div class="card-body">
+        <ul>
+          <li><code>getTasks()</code>, <code>getRisks()</code>, <code>getIssues()</code></li>
+          <li><code>getProcurement()</code>, <code>getBudget()</code>, <code>getSCurve()</code></li>
+          <li><code>addDocument(collection, data)</code></li>
+          <li><code>updateDocument(collection, id, data)</code> — with <code>merge: true</code></li>
+          <li><code>deleteDocument(collection, id)</code></li>
+          <li><code>onSnapshot()</code> — real-time live listeners</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card accent-left">
+      <div class="card-title">🔧 Claude Code Prompt for Firebase Connection</div>
+      <div class="card-body">
+        <p>Ask Claude Code: <em>"Add Firebase Firestore SDK v10 (modular) from CDN. Connect using [paste your config]. Create a firebaseService object with all CRUD functions. Use onSnapshot() for real-time listeners on all collections. Show 'Last updated: X seconds ago' in the header."</em></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-body">
+      <strong>Critical: Use merge:true on all updates</strong>
+      <p>Always use <code>setDoc(docRef, data, &#123; merge: true &#125;)</code> — never plain <code>setDoc(docRef, data)</code>. Without merge:true, saving partial data overwrites and erases fields you didn't include in the update.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 6: DATA ENTRY -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fef3c7;">📊</div>
+    <div><h2>6. Phase 3 — Data Entry: Excel + Power Automate</h2><div class="section-sub">The data pipeline from team input to live dashboard</div></div>
+  </div>
+
+  <div class="card accent-left yellow">
+    <div class="card-title">📁 OneDrive Folder Structure</div>
+    <div class="card-body">
+      <div class="code"><span class="code-label">OneDrive</span>📁 Project Alpha — Database/
+   ├── 01_Tasks.xlsx          (Table name: Tasks)
+   ├── 02_Risks.xlsx          (Table name: Risks)     ← Backup only — primary entry via dashboard
+   ├── 03_Issues.xlsx         (Table name: Issues)    ← Backup only — primary entry via dashboard
+   ├── 04_Procurement.xlsx    (Table name: Procurement)
+   ├── 05_Budget.xlsx         (Table name: Budget)
+   └── 06_SCurve_Progress.xlsx (Table name: SCurve)</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:1rem; margin:1.25rem 0 .75rem; font-weight:700; color:var(--primary);">Excel File Rules (Critical for Power Automate Compatibility)</h3>
+  <div class="grid-2">
+    <div class="callout tip"><div class="callout-icon">✅</div><div class="callout-body"><strong>Always Do</strong><ul><li>Convert all data ranges to <strong>named Tables</strong> (Ctrl+T)</li><li>Use underscores in column headers: <code>Task_Name</code> not "Task Name"</li><li>Add new columns at the <strong>far right end</strong> only</li><li>Use DD/MM/YYYY date format consistently</li><li>Fill all cells in existing rows when adding a new column</li></ul></div></div>
+    <div class="callout warn"><div class="callout-icon">❌</div><div class="callout-body"><strong>Never Do</strong><ul><li>Insert columns in the middle of a table</li><li>Delete rows — mark as Cancelled/Archived instead</li><li>Use spaces or special characters in column headers</li><li>Leave blank rows between data rows</li><li>Use % symbol in number fields (just use the number)</li></ul></div></div>
+  </div>
+
+  <h3 style="font-size:1rem; margin:1.25rem 0 .75rem; font-weight:700; color:var(--primary);">Power Automate Flow Structure</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <tr><th>Flow Name</th><th>Trigger</th><th>Firebase Collection</th><th>Frequency</th></tr>
+      <tr><td>Sync Tasks to Firebase</td><td>New row in Tasks table</td><td>tasks</td><td>On save</td></tr>
+      <tr><td>Sync Procurement to Firebase</td><td>New row in Procurement table</td><td>procurement</td><td>On save</td></tr>
+      <tr><td>Sync Budget to Firebase</td><td>New row in Budget table</td><td>budget</td><td>On save</td></tr>
+      <tr><td>Sync SCurve to Firebase</td><td>New row in SCurve table</td><td>scurve</td><td>On save</td></tr>
+      <tr><td>Full Sync Tasks — Daily</td><td>Schedule: every day 6AM</td><td>tasks</td><td>Daily (catches edits)</td></tr>
+      <tr><td>Full Sync All — Weekly</td><td>Schedule: every Sunday 5AM</td><td>all collections</td><td>Weekly full refresh</td></tr>
+    </table>
+  </div>
+
+  <div class="card accent-left yellow" style="margin-top:1rem;">
+    <div class="card-title">⚡ Power Automate Flow Structure (Each Flow)</div>
+    <div class="card-body">
+      <ol>
+        <li><strong>Trigger:</strong> "When a row is added (Excel Online Business)" → select file and table</li>
+        <li><strong>Compose action:</strong> Build JSON body mapping Excel columns to Firebase fields (use <code>integerValue</code> for numbers, <code>stringValue</code> for text)</li>
+        <li><strong>HTTP action:</strong> PATCH to Firebase REST API — <code>https://firestore.googleapis.com/v1/projects/[project-id]/databases/(default)/documents/[collection]/[row-id]?key=[api-key]</code></li>
+        <li><strong>Error handling:</strong> Condition → if HTTP status ≥ 400 → send Outlook email alert</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body">
+      <strong>Null-safe field expression in Power Automate</strong>
+      <p>Wrap all fields to prevent crashes on empty cells: <code>@&#123;if(empty(triggerOutputs()?['body/Column_Name']), '', triggerOutputs()?['body/Column_Name'])&#125;</code></p>
+    </div>
+  </div>
+
+  <h3 style="font-size:1rem; margin:1.25rem 0 .75rem; font-weight:700; color:var(--primary);">Team Update Schedule</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <tr><th>Module</th><th>Who Updates</th><th>When</th><th>Method</th></tr>
+      <tr><td>Tasks / % Complete</td><td>Planning Engineer / PM</td><td>Every Monday morning</td><td>Excel</td></tr>
+      <tr><td>Risk Register</td><td>Risk Owner / PM</td><td>As risks arise + every 2 weeks review</td><td>Dashboard interface</td></tr>
+      <tr><td>Issue Register</td><td>Issue owner</td><td>Immediately when issue occurs</td><td>Dashboard interface</td></tr>
+      <tr><td>Procurement</td><td>Procurement Officer</td><td>Weekly</td><td>Excel</td></tr>
+      <tr><td>Budget / Cost</td><td>Finance / Cost Controller</td><td>Monthly</td><td>Excel</td></tr>
+      <tr><td>S-Curve Actuals</td><td>Planning Engineer</td><td>Monthly</td><td>Excel</td></tr>
+    </table>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 7: AI LAYER -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fce7f3;">🤖</div>
+    <div><h2>7. Phase 4 — AI Executive Summary (Gemini)</h2><div class="section-sub">Automated project reports in 3 seconds instead of 3 hours</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card accent-left pink">
+      <div class="card-title">📋 Executive Summary Button</div>
+      <div class="card-body">
+        <p>Collects live data from dashboard (% complete, variance, open risks, open issues, budget %, top 3 overdue tasks) → sends to Gemini API → displays 3-paragraph professional summary.</p>
+        <p><strong>Model:</strong> <code>gemini-1.5-flash</code> (fast + free)</p>
+        <p><strong>Output:</strong> Para 1=Status, Para 2=Concerns, Para 3=Actions</p>
+      </div>
+    </div>
+    <div class="card accent-left pink">
+      <div class="card-title">⚠️ AI Risk Analysis Button</div>
+      <div class="card-body">
+        <p>Sends all current risks to Gemini → identifies top 3 compound risk combinations → recommends one specific mitigation per risk → displays above risk table.</p>
+        <p><strong>Cache result</strong> to avoid unnecessary API calls when data hasn't changed.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="code"><span class="code-label">Gemini API Endpoint</span>POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY
+
+Body: {
+  "contents": [{ "parts": [{ "text": "Your prompt with project data here" }] }]
+}</div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 8: DEPLOYMENT -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fee2e2;">🚀</div>
+    <div><h2>8. Phase 5 — Deployment</h2><div class="section-sub">Get a live shareable URL in under 5 minutes</div></div>
+  </div>
+
+  <div class="step">
+    <div class="step-badge" style="background:#dc2626;">5.1</div>
+    <div class="step-content">
+      <div class="step-title">Install Node.js and Firebase Tools</div>
+      <div class="step-desc">
+        <p>Download Node.js from <strong>nodejs.org</strong>. Then in Terminal (Mac) or Command Prompt (Windows):</p>
+        <div class="code">npm install -g firebase-tools
+firebase login</div>
+      </div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge" style="background:#dc2626;">5.2</div>
+    <div class="step-content">
+      <div class="step-title">Initialize and Deploy</div>
+      <div class="step-desc">
+        <div class="code">cd pm-dashboard
+firebase init hosting
+# public directory? →  .
+# single-page app? →  y
+# overwrite index.html? →  N
+firebase deploy</div>
+        <p style="margin-top:.5rem;">Your live URL: <code>https://pm-dashboard-2025.web.app</code></p>
+        <p><strong>Future updates:</strong> just run <code>firebase deploy</code> again — live URL updates immediately.</p>
+      </div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge" style="background:#dc2626;">5.3</div>
+    <div class="step-content">
+      <div class="step-title">Password Protection (Simple Frontend Lock)</div>
+      <div class="step-desc"><p>Ask Claude Code: <em>"Add a full-screen login overlay on page load. If password matches 'ProjectAlpha2025!' set sessionStorage auth and hide overlay. Wrong password shakes the input and shows a red error."</em></p></div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 9: MODULE RELEASE CYCLE -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#dbeafe;">🔄</div>
+    <div><h2>9. Module Release Cycle — Repeat for Every Module</h2><div class="section-sub">6-station quality process — never skip a station</div></div>
+  </div>
+
+  <div class="code"><span class="code-label">The Pipeline</span>STATION 1: BUILD → STATION 2: CONNECT → STATION 3: POPULATE → STATION 4: TEST → STATION 5: DEPLOY → STATION 6: DOCUMENT</div>
+
+  <div class="card accent-left" style="margin-top:1rem;">
+    <div class="card-title">🏗️ Station 1 — Build (Frontend with Claude Code)</div>
+    <div class="card-body">
+      <ul>
+        <li>Save backup: <code>index_v[N]_before_[module].html</code> before any changes</li>
+        <li>Build with Claude Code → copy code → paste into correct section of index.html</li>
+        <li>Merge CSS and JavaScript (no duplicate blocks)</li>
+        <li>Open in browser → verify renders with sample data → fix any issues</li>
+        <li>Save: <code>index_v[N]_[module]_built.html</code></li>
+      </ul>
+    </div>
+  </div>
+  <div class="card accent-left green">
+    <div class="card-title">🔌 Station 2 — Connect (Excel + Power Automate + Firebase)</div>
+    <div class="card-body">
+      <ul>
+        <li>Add 3–5 realistic test rows in the relevant Excel file</li>
+        <li>Open Power Automate flow → verify trigger points to correct file/table</li>
+        <li>Update Compose JSON body for this module's columns</li>
+        <li>Save flow → click Test → verify green ✓ → check Firebase for new documents</li>
+        <li>Verify field names and data types in Firebase are correct</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card accent-left yellow">
+    <div class="card-title">📊 Station 3 — Populate (Live Firebase Data in Dashboard)</div>
+    <div class="card-body">
+      <ul>
+        <li>Ask Claude Code to replace hardcoded sample data with Firebase reads</li>
+        <li>Test real-time sync: edit a value in Firebase Console → dashboard should update within 3 seconds without refreshing</li>
+        <li>Save: <code>index_v[N]_[module]_connected.html</code></li>
+      </ul>
+    </div>
+  </div>
+  <div class="card accent-left red">
+    <div class="card-title">🧪 Station 4 — Test (Full Functional Testing)</div>
+    <div class="card-body">
+      <div class="grid-2">
+        <div>
+          <strong style="font-size:.85rem;">Data Display</strong>
+          <ul style="font-size:.84rem; color:var(--text-secondary); padding-left:1rem; margin-top:.25rem;">
+            <li>All Firebase rows appear correctly</li>
+            <li>Charts render with correct data</li>
+            <li>KPI cards show correct totals</li>
+            <li>Status badges correct colors</li>
+            <li>Empty state doesn't crash</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:.85rem;">Interactions</strong>
+          <ul style="font-size:.84rem; color:var(--text-secondary); padding-left:1rem; margin-top:.25rem;">
+            <li>All filter dropdowns work</li>
+            <li>Search box filters as you type</li>
+            <li>Column header sorting works</li>
+            <li>Add/Edit/Delete all work correctly</li>
+            <li>Mobile layout — test on phone</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card accent-left purple">
+    <div class="card-title">🚀 Station 5 — Deploy</div>
+    <div class="card-body">
+      <ul>
+        <li>Run <code>firebase deploy</code></li>
+        <li>Open live URL (not local file) → test this module</li>
+        <li>Test on mobile phone</li>
+        <li>Ask one team member to test this module specifically</li>
+        <li>Save: <code>index_v[N]_[module]_DEPLOYED.html</code></li>
+      </ul>
+    </div>
+  </div>
+  <div class="card accent-left teal">
+    <div class="card-title">📝 Station 6 — Document (10 minutes, non-negotiable)</div>
+    <div class="card-body">
+      <p>Update <code>README.txt</code> with:</p>
+      <div class="code"><span class="code-label">README.txt entry per module</span>MODULE: [Name]
+DATE DEPLOYED: [date]
+FIREBASE COLLECTION: [name]
+EXCEL FILE: [filename] — OneDrive → Project Alpha Database
+POWER AUTOMATE FLOW: [flow name]
+EXCEL TABLE NAME: [table name]
+WHO UPDATES: [name] — frequency: [weekly/monthly/etc]
+STATUS VALUES ALLOWED: [list exact values]
+KNOWN ISSUES: [anything noted]
+VERSION FILE: index_v[N]_[module]_DEPLOYED.html</div>
+      <p style="margin-top:.5rem;">Notify team via Microsoft Teams: <em>"[Module] is now live. To update, edit [Excel file] in the Files tab. Dashboard updates within 2 minutes."</em></p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 10: SCHEMA CHANGE MANAGEMENT -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fce7f3;">🗂️</div>
+    <div><h2>10. Schema Change Management</h2><div class="section-sub">How to safely add new columns to existing modules without breaking anything</div></div>
+  </div>
+
+  <div class="callout rule">
+    <div class="callout-icon">📌</div>
+    <div class="callout-body">
+      <strong>The Golden Rule Before Any Schema Change</strong>
+      <p>Message your team: <em>"Pausing [module] pipeline for 30 minutes."</em> Turn off the affected Power Automate flow. Backup index.html. Then proceed.</p>
+    </div>
+  </div>
+
+  <div class="card accent-left">
+    <div class="card-title">📋 The 4-Layer Change Impact — Every new column touches all 4</div>
+    <div class="card-body">
+      <div class="arch" style="padding:1rem;">
+        <div class="arch-row">
+          <div class="arch-box ye">Excel<br><small>Add column at far right</small></div>
+          <div class="arch-arr">→</div>
+          <div class="arch-box or">Power Automate<br><small>Add JSON field mapping</small></div>
+          <div class="arch-arr">→</div>
+          <div class="arch-box gr">Firebase<br><small>Backfill via full sync</small></div>
+          <div class="arch-arr">→</div>
+          <div class="arch-box pu">Dashboard<br><small>Add to table + edit form</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size:1rem; margin:1.25rem 0 .75rem; font-weight:700; color:var(--primary);">Step-by-Step for Every Column Addition</h3>
+
+  <div class="step">
+    <div class="step-badge" style="background:#db2777;">1</div>
+    <div class="step-content">
+      <div class="step-title">Excel — Add the New Column</div>
+      <div class="step-desc">
+        <ul>
+          <li>Click the header of the LAST column → press Tab to add new column to the right</li>
+          <li>Name with underscores: <code>Review_Date</code> not "Review Date"</li>
+          <li>Fill in a value for EVERY existing row (even if "N/A") — blank breaks Power Automate</li>
+          <li>Save the file</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge" style="background:#db2777;">2</div>
+    <div class="step-content">
+      <div class="step-title">Power Automate — Add JSON Field + Null Protection</div>
+      <div class="step-desc">
+        <p>Open the Compose action → add ONE new line only:</p>
+        <div class="code">"review_date": {"stringValue": "@{if(empty(triggerOutputs()?['body/Review_Date']), '', triggerOutputs()?['body/Review_Date'])}"}</div>
+        <p>For number fields use <code>integerValue</code> and wrap with <code>int()</code>:</p>
+        <div class="code">"score": {"integerValue": "@{int(triggerOutputs()?['body/Score'])}"}</div>
+        <p>Save → Turn flow back ON → Test → verify green ✓</p>
+      </div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge" style="background:#db2777;">3</div>
+    <div class="step-content">
+      <div class="step-title">Firebase — Backfill Existing Documents</div>
+      <div class="step-desc"><p>Run the Full Sync scheduled flow manually RIGHT NOW. This re-syncs every row including the new column. All existing Firebase documents will have the new field within minutes. Never do this manually document by document.</p></div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge" style="background:#db2777;">4</div>
+    <div class="step-content">
+      <div class="step-title">Dashboard — Add to Table Display + Edit Form</div>
+      <div class="step-desc"><p>Ask Claude Code: <em>"In my [module] section, I added a new Firebase field called 'review_date'. Please: (1) add a 'Review Date' column to the table, (2) add a 'Review Date' input to the Add/Edit side panel form, (3) ensure updateDocument() includes the new field. Here is the current code: [paste module code]"</em></p></div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge" style="background:#db2777;">5</div>
+    <div class="step-content">
+      <div class="step-title">Check Executive Summary + Deploy + Document</div>
+      <div class="step-desc"><p>Check if the new column affects any KPI cards in Executive Summary. Run the 5-minute regression test. Deploy via <code>firebase deploy</code>. Update README.txt change log. Notify team.</p></div>
+    </div>
+  </div>
+
+  <h3 style="font-size:1rem; margin:1.25rem 0 .75rem; font-weight:700; color:var(--primary);">Change Impact Quick Reference</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <tr><th>Change Type</th><th>Excel</th><th>Power Automate</th><th>Firebase</th><th>Dashboard</th></tr>
+      <tr><td>Add new column</td><td>✅ Add at far right</td><td>✅ Add JSON field</td><td>✅ Backfill via sync</td><td>✅ Table + form</td></tr>
+      <tr><td>Rename a column</td><td>✅ Rename header</td><td>✅ Update reference</td><td>✅ Backfill</td><td>✅ Update label</td></tr>
+      <tr><td>Delete a column</td><td>✅ Remove column</td><td>✅ Remove field</td><td>⚠️ Old field stays (harmless)</td><td>✅ Remove from table + form</td></tr>
+      <tr><td>Change status values</td><td>✅ Update team guide</td><td>❌ No change</td><td>❌ No change</td><td>✅ Update badge colors</td></tr>
+      <tr><td>Add a new module</td><td>✅ New Excel file</td><td>✅ New flow</td><td>✅ New collection (auto)</td><td>✅ New tab + code</td></tr>
+    </table>
+  </div>
+
+  <h3 style="font-size:1rem; margin:1.25rem 0 .75rem; font-weight:700; color:var(--primary);">Top 5 Issues and Exact Fixes</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <tr><th>Issue</th><th>Cause</th><th>Fix</th></tr>
+      <tr><td>Power Automate crashes "Invalid column"</td><td>Space or special character in Excel column header</td><td>Rename to underscores: <code>Review_Date</code></td></tr>
+      <tr><td>New column shows blank/undefined in dashboard</td><td>Field name mismatch (camelCase vs snake_case)</td><td>Ask Claude Code to fix the field name reference in JS</td></tr>
+      <tr><td>Old rows show blank for new column</td><td>Backfill step was skipped</td><td>Run Full Sync flow manually right now</td></tr>
+      <tr><td>Edit saves new field but wipes other fields</td><td>Missing <code>merge: true</code> in setDoc()</td><td>Change to <code>setDoc(docRef, data, &#123; merge: true &#125;)</code></td></tr>
+      <tr><td>Number field comes through as text in Firebase</td><td>Mapped as stringValue instead of integerValue</td><td>Use <code>"integerValue": "@&#123;int(...)&#125;"</code> in Compose JSON</td></tr>
+    </table>
+  </div>
+
+  <div class="card accent-left" style="margin-top:1rem;">
+    <div class="card-title">📁 File Versioning Convention</div>
+    <div class="card-body">
+      <div class="code">Before change:    index_v4_risks_DEPLOYED.html          ← safety net
+During build:     index_v5_risks_review_date_WIP.html    ← work in progress
+After testing:    index_v5_risks_review_date_TESTED.html ← passed all tests
+After deploy:     index_v5_risks_review_date_DEPLOYED.html ← live version</div>
+      <p style="margin-top:.5rem; font-size:.84rem; color:var(--text-secondary);">Keep all versions. Storage is free. Peace of mind is not.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 11: SECURITY -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#d1fae5;">🔐</div>
+    <div><h2>11. Access Control &amp; Security</h2><div class="section-sub">Simplified — the dashboard is read-only, so requirements are minimal</div></div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">✅</div>
+    <div class="callout-body">
+      <strong>Key Decision: Role-Based Access is NOT needed</strong>
+      <p>Because all data entry happens in Excel and the dashboard is 100% read-only, there is nothing to protect from being edited through the web interface. Role-based access control (Admin/Editor/Viewer) is only needed when users can create or modify data through the web app — which this dashboard does not allow (except Risk and Issue registers, managed by your own team).</p>
+    </div>
+  </div>
+
+  <div class="card accent-left green">
+    <div class="card-title">🔐 Security Decision Matrix — Choose One Row</div>
+    <div class="card-body">
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <tr><th>Scenario</th><th>What You Need</th><th>Effort</th></tr>
+          <tr><td>Internal team, low-sensitivity data</td><td>Simple password on login screen (already built)</td><td>✅ Done</td></tr>
+          <tr><td>Client needs access but not cost/risk details</td><td>Two HTML files: full version + client-facing version (remove sensitive modules)</td><td>⭐ Low</td></tr>
+          <tr><td>Highly confidential commercial data</td><td>Firebase Google Sign-In restricted to @yourcompany.com email</td><td>⚠️ Medium</td></tr>
+          <tr><td>Public-facing progress dashboard</td><td>No login at all — share URL directly</td><td>✅ Done</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">📌</div>
+    <div class="callout-body">
+      <strong>OneDrive/SharePoint already handles data security</strong>
+      <p>Access to edit Excel files is controlled by Microsoft Teams channel membership. Team members = can edit. Guests/clients added to Teams = set read-only on the Files tab. People outside Teams = no access to Excel at all. Nothing additional needed on the dashboard side for data integrity.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 12: DATA ENTRY DECISION -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fef3c7;">📝</div>
+    <div><h2>12. Data Entry Method — Final Decision</h2><div class="section-sub">Hybrid approach matching entry method to data type and user behavior</div></div>
+  </div>
+
+  <div class="callout rule">
+    <div class="callout-icon">🎯</div>
+    <div class="callout-body">
+      <strong>The Hybrid Principle</strong>
+      <p>Use Excel for structured bulk data that's managed in batches. Use the dashboard web interface for event-driven records that are logged in real-time and updated continuously through a lifecycle.</p>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <tr><th>Module</th><th>Method</th><th>Reason</th></tr>
+      <tr>
+        <td><strong>Tasks / Gantt</strong></td>
+        <td><span class="badge green">✅ Excel</span></td>
+        <td>Inherently tabular. Planning engineers manage this in Excel naturally. Batch updates weekly.</td>
+      </tr>
+      <tr>
+        <td><strong>S-Curve Progress</strong></td>
+        <td><span class="badge green">✅ Excel</span></td>
+        <td>Small monthly table (12–24 rows/year). Numbers calculated externally before entry. Excel is the right tool.</td>
+      </tr>
+      <tr>
+        <td><strong>Procurement</strong></td>
+        <td><span class="badge green">✅ Excel</span></td>
+        <td>Wide rows with many columns updated together. Procurement officer's natural workflow is spreadsheet-based.</td>
+      </tr>
+      <tr>
+        <td><strong>Budget / Cost</strong></td>
+        <td><span class="badge green">✅ Excel</span></td>
+        <td>Data comes from accounting/ERP systems. Cost controller processes figures in Excel first regardless. No benefit to a web form.</td>
+      </tr>
+      <tr>
+        <td><strong>Risk Register</strong></td>
+        <td><span class="badge purple">⭐ Dashboard Interface</span></td>
+        <td>Risks are logged one at a time in real-time (meetings, site walks). Frequently updated through lifecycle (likelihood changes, mitigation updates, status to Closed). Web interface is 10x faster for these micro-updates.</td>
+      </tr>
+      <tr>
+        <td><strong>Issue Register</strong></td>
+        <td><span class="badge purple">⭐ Dashboard Interface</span></td>
+        <td>Same as risks — issues happen in the moment. Must be logged immediately. Status changes frequently: Open → In Progress → Resolved → Closed. Web form is the right tool.</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-body">
+      <strong>Why not Microsoft/Google Forms?</strong>
+      <p>Forms can only <strong>add new records</strong> — they cannot edit existing ones. For Risk and Issue registers where records go through a multi-stage lifecycle with frequent updates, forms create duplicate/confusing entries. The dashboard inline edit panel handles both adding AND updating in one clean interface.</p>
+    </div>
+  </div>
+
+  <div class="card accent-left purple">
+    <div class="card-title">🔧 What This Means for Your Dashboard Build</div>
+    <div class="card-body">
+      <p>For Risk Register and Issue Register <strong>only</strong>, the dashboard needs direct Firebase write capability:</p>
+      <ul>
+        <li>Floating <strong>+</strong> button (bottom-right) → opens empty add form → saves to Firebase</li>
+        <li>Clicking any table row → opens pre-filled edit panel → saves changes with <code>merge: true</code></li>
+        <li>Delete button with confirmation dialog</li>
+        <li>Cancel button closes panel without saving</li>
+      </ul>
+      <p style="margin-top:.5rem;">All other modules remain <strong>100% read-only</strong> on the dashboard.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 13: ADDITIONAL CONSIDERATIONS -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#ede9fe;">💡</div>
+    <div><h2>13. Additional Considerations</h2><div class="section-sub">Important factors to plan for as the project evolves</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card accent-left">
+      <div class="card-title">⚡ Performance (as data grows)</div>
+      <div class="card-body">
+        <ul>
+          <li>Add <strong>pagination</strong> to all tables — 25 rows per page with Previous/Next buttons</li>
+          <li>Use Firebase query filters (where clause) instead of fetching all data and filtering in JavaScript</li>
+          <li>Gantt Chart: if 200+ tasks, add "Load by Phase" toggle</li>
+          <li>S-Curve: maximum 24 data points (monthly) is fine</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card accent-left green">
+      <div class="card-title">📡 Offline Resilience</div>
+      <div class="card-body">
+        <ul>
+          <li>Enable Firebase offline persistence — dashboard loads cached data when no internet</li>
+          <li>Show "⚠️ Offline — showing last synced data" banner when connection drops</li>
+          <li>Power Automate retry policy: 5 retries, 10-minute intervals — configure on each flow</li>
+          <li>Critical for teams on construction sites with poor connectivity</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card accent-left yellow">
+      <div class="card-title">🖨️ Reporting &amp; Export</div>
+      <div class="card-body">
+        <ul>
+          <li>Export to Excel button on each table (SheetJS library, free CDN)</li>
+          <li>Print-friendly CSS stylesheet — hides sidebar and buttons, prints clean A4</li>
+          <li>Scheduled Power Automate email: every Monday 8AM → reads Firebase → sends HTML summary email via Outlook</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card accent-left purple">
+      <div class="card-title">📋 Audit Trail</div>
+      <div class="card-body">
+        <ul>
+          <li>Add <code>last_modified_by</code> and <code>last_modified_at</code> fields to every Firebase document</li>
+          <li>Power Automate: include <code>x-ms-user-displayname</code> header in every sync</li>
+          <li>Optional: <code>change_log</code> Firestore collection recording what changed, who, when, old vs new value</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card accent-left teal">
+      <div class="card-title">💰 Cost Management</div>
+      <div class="card-body">
+        <div class="tbl-wrap">
+          <table class="tbl" style="font-size:.78rem;">
+            <tr><th>Service</th><th>Free Limit</th><th>Watch For</th></tr>
+            <tr><td>Firebase Firestore</td><td>50K reads/day</td><td>10+ daily users</td></tr>
+            <tr><td>Firebase Hosting</td><td>10GB/month</td><td>Very unlikely to hit</td></tr>
+            <tr><td>Google AI Studio</td><td>15 req/min</td><td>Generating many summaries</td></tr>
+            <tr><td>Power Automate</td><td>750 runs/month/user</td><td>Busy update weeks</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card accent-left red">
+      <div class="card-title">📅 Project Lifecycle</div>
+      <div class="card-body">
+        <ul>
+          <li>Plan for phase transitions: Pre-Project → Active → Completion → DLP → Closed</li>
+          <li>Never delete records — mark Status as "Archived" or "Closed"</li>
+          <li>Freeze S-Curve at 100% on completion (don't allow backwards movement)</li>
+          <li>Multi-project: prefix all IDs with project code (e.g., <code>ALPHA-TSK-001</code>) for future scalability</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card accent-left" style="margin-top:.5rem;">
+    <div class="card-title">🧪 5-Minute Regression Test (Run After Every Change)</div>
+    <div class="card-body">
+      <ol>
+        <li>Open dashboard → navigate to the changed module</li>
+        <li>Does the table load with all columns (including any new ones)?</li>
+        <li>Do all filters and search still work?</li>
+        <li>Add a new record → does all data save correctly to Firebase?</li>
+        <li>Edit an existing record → does it update without wiping other fields?</li>
+        <li>Check Executive Summary — any broken KPI cards?</li>
+        <li>Open on mobile — does the new column display correctly?</li>
+      </ol>
+      <p style="margin-top:.5rem; font-size:.84rem; color:var(--text-secondary);">If all 7 pass → deploy. If any fail → fix first.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 14: EXCEL STRUCTURE -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#d1fae5;">📊</div>
+    <div><h2>14. Excel Database Structure — All 6 Files</h2><div class="section-sub">Raw data only, no formulas, all converted to named Tables</div></div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">📌</div>
+    <div class="callout-body">
+      <strong>Critical Setup Step for Every File</strong>
+      <p>Click any data cell → press <strong>Ctrl+T</strong> → tick "My table has headers" → OK → click Table → Table Design tab → rename to the table name shown below. Power Automate ONLY reads named Tables, not plain ranges.</p>
+    </div>
+  </div>
+
+  <div class="card accent-left green" style="margin-bottom:.75rem;">
+    <div class="card-title">📋 01_Tasks.xlsx — Table: <code>Tasks</code></div>
+    <div class="card-body">
+      <div class="pills">
+        <span class="pill">Task_ID</span><span class="pill">Task_Name</span><span class="pill">Phase</span><span class="pill">Responsible</span><span class="pill">Planned_Start</span><span class="pill">Planned_Finish</span><span class="pill">Actual_Start</span><span class="pill">Actual_Finish</span><span class="pill">Percent_Complete (0-100)</span><span class="pill">Status</span><span class="pill">Notes</span>
+      </div>
+      <p style="margin-top:.5rem; font-size:.82rem; color:var(--text-secondary);">Status values: Not Started / In Progress / Completed / Delayed</p>
+    </div>
+  </div>
+  <div class="card accent-left red" style="margin-bottom:.75rem;">
+    <div class="card-title">⚠️ 02_Risks.xlsx — Table: <code>Risks</code> (Backup only — primary entry via dashboard)</div>
+    <div class="card-body">
+      <div class="pills">
+        <span class="pill">Risk_ID</span><span class="pill">Description</span><span class="pill">Category</span><span class="pill">Likelihood (1-5)</span><span class="pill">Impact (1-5)</span><span class="pill">Owner</span><span class="pill">Mitigation_Action</span><span class="pill">Status</span><span class="pill">Last_Updated</span>
+      </div>
+      <p style="margin-top:.5rem; font-size:.82rem; color:var(--text-secondary);">Status values: Active / Monitoring / Closed | Category: Procurement / Safety / Financial / Technical / External</p>
+    </div>
+  </div>
+  <div class="card accent-left" style="margin-bottom:.75rem; border-left-color:#8b5cf6;">
+    <div class="card-title">🐛 03_Issues.xlsx — Table: <code>Issues</code> (Backup only — primary entry via dashboard)</div>
+    <div class="card-body">
+      <div class="pills">
+        <span class="pill">Issue_ID</span><span class="pill">Date_Raised</span><span class="pill">Title</span><span class="pill">Description</span><span class="pill">Category</span><span class="pill">Priority</span><span class="pill">Raised_By</span><span class="pill">Assigned_To</span><span class="pill">Due_Date</span><span class="pill">Status</span><span class="pill">Resolution</span>
+      </div>
+      <p style="margin-top:.5rem; font-size:.82rem; color:var(--text-secondary);">Priority: Critical / High / Medium / Low | Status: Open / In Progress / Resolved / Closed</p>
+    </div>
+  </div>
+  <div class="card accent-left yellow" style="margin-bottom:.75rem;">
+    <div class="card-title">🛒 04_Procurement.xlsx — Table: <code>Procurement</code></div>
+    <div class="card-body">
+      <div class="pills">
+        <span class="pill">Item_ID</span><span class="pill">Item_Name</span><span class="pill">Description</span><span class="pill">Vendor</span><span class="pill">PO_Number</span><span class="pill">Requisition_Date</span><span class="pill">Order_Date</span><span class="pill">Expected_Delivery</span><span class="pill">Actual_Delivery</span><span class="pill">Status</span><span class="pill">Value_USD</span><span class="pill">Notes</span>
+      </div>
+      <p style="margin-top:.5rem; font-size:.82rem; color:var(--text-secondary);">Status: Pending Approval / PO Issued / In Transit / Delivered / Delayed</p>
+    </div>
+  </div>
+  <div class="card accent-left green" style="margin-bottom:.75rem;">
+    <div class="card-title">💰 05_Budget.xlsx — Table: <code>Budget</code></div>
+    <div class="card-body">
+      <div class="pills">
+        <span class="pill">Category_ID</span><span class="pill">Category_Name</span><span class="pill">WBS_Code</span><span class="pill">Budget_Amount</span><span class="pill">Committed_Amount</span><span class="pill">Actual_Spent</span><span class="pill">Forecast_Final</span><span class="pill">Notes</span>
+      </div>
+      <p style="margin-top:.5rem; font-size:.82rem; color:var(--text-secondary);">Categories: Labor / Materials / Equipment / Subcontract / Contingency</p>
+    </div>
+  </div>
+  <div class="card accent-left teal">
+    <div class="card-title">📈 06_SCurve_Progress.xlsx — Table: <code>SCurve</code></div>
+    <div class="card-body">
+      <div class="pills">
+        <span class="pill">Month (Jan-25)</span><span class="pill">Planned_Physical (%)</span><span class="pill">Actual_Physical (%)</span><span class="pill">Planned_Cost (%)</span><span class="pill">Actual_Cost (%)</span><span class="pill">Forecast_Physical (%)</span>
+      </div>
+      <p style="margin-top:.5rem; font-size:.82rem; color:var(--text-secondary);">All values are cumulative percentages. Forecast_Physical: blank for past months, fill from current month onward.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════ -->
+<!-- SECTION 15: MASTER CHECKLIST -->
+<!-- ═══════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:#d1fae5;">✅</div>
+    <div><h2>15. Pre-Launch Master Checklist</h2><div class="section-sub">Do not share the dashboard URL with stakeholders until all items are ticked</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title" style="color:var(--primary);">⚙️ Setup &amp; Infrastructure</div>
+      <ul class="checklist">
+        <li>Google account, Firebase project created</li>
+        <li>Gemini API key saved securely</li>
+        <li>Firebase Firestore database initialized</li>
+        <li>Firebase config object saved</li>
+        <li>6 Excel files created in OneDrive with named Tables</li>
+        <li>Files accessible inside Microsoft Teams Files tab</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:#8b5cf6;">🎨 Frontend Dashboard</div>
+      <ul class="checklist">
+        <li>All 6 modules built and rendering</li>
+        <li>Navigation between all tabs works</li>
+        <li>All charts render correctly</li>
+        <li>Filter/search/sort work in all tables</li>
+        <li>Risk + Issue add/edit/delete panels work</li>
+        <li>Mobile layout tested on actual phone</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:#10b981;">🔥 Data Pipeline</div>
+      <ul class="checklist">
+        <li>Firebase connected — real-time updates working</li>
+        <li>Power Automate flows created for all 4 Excel files</li>
+        <li>Full sync scheduled flows running daily</li>
+        <li>Error notification email configured on each flow</li>
+        <li>End-to-end test: Excel edit → Firebase → Dashboard</li>
+        <li>merge:true confirmed on all updateDocument() calls</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:#d97706;">🚀 Launch Readiness</div>
+      <ul class="checklist">
+        <li>All test/dummy data removed from Firebase</li>
+        <li>Real project data entered for at least 3 modules</li>
+        <li>AI Summary button generates correctly</li>
+        <li>Dashboard deployed — live URL confirmed working</li>
+        <li>Password protection confirmed working</li>
+        <li>README.txt documented and backed up</li>
+        <li>Team trained on Excel update process</li>
+        <li>Update schedule agreed and documented</li>
+        <li>Backup person identified who can maintain dashboard</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <strong>Project Management Dashboard — Technical Build Guide</strong><br>
+  <span style="opacity:.6; font-size:.8rem; margin-top:.35rem; display:block;">
+    Stack: Firebase Firestore &amp; Hosting · Power Automate · Google AI Studio (Gemini 1.5 Flash) · Chart.js · DHTMLX Gantt · Claude Code<br>
+    Estimated build time for a beginner following this guide: 2–4 days per module
+  </span>
+</footer>
+
+</body>
+</html>
