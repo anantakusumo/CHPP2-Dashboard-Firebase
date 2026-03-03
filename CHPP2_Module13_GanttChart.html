@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 13 — Gantt Chart · CHPP2 Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── BRAND DNA TOKENS (CHPP2-DS-001 Rev A) ─────────────── */
+:root {
+  --teal-900: #061B24; --teal-800: #0A2E3A; --teal-700: #0D4A5C;
+  --teal-600: #147089; --teal-500: #1A8EA8; --teal-400: #1ABDD4;
+  --teal-200: #A0DCE8; --teal-100: #D5EEF5; --teal-50:  #EBF6FA;
+
+  --gold-700: #9B3A00; --gold-600: #C04A00; --gold-500: #E8681A;
+  --gold-400: #F5922A; --gold-300: #F5A823; --gold-200: #F7C97A;
+  --gold-100: #FDE8D4;
+
+  --facet-blue: #2B7FC8; --facet-green: #27AE60;
+  --facet-orange: #F2994A; --facet-cyan: #1ABDD4;
+
+  --status-green: #27AE60; --status-amber: #F2994A;
+  --status-red: #EB5757;   --status-blue: #2B7FC8;
+  --status-grey: #8FA8B0;
+
+  --status-green-bg: #D5F0E3; --status-amber-bg: #FDE8D4;
+  --status-red-bg: #FCDADA;   --status-blue-bg: #D5EAF8;
+  --status-grey-bg: #E4ECEE;
+
+  --neutral-900: #0A1E26; --neutral-800: #1A3340; --neutral-700: #2E5160;
+  --neutral-600: #4A7282; --neutral-500: #6B98A6; --neutral-400: #96B8C2;
+  --neutral-300: #C0D6DC; --neutral-200: #D4E4E8; --neutral-100: #EBF2F4;
+  --neutral-50: #F4F8F9;  --white: #FFFFFF;
+
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 3px rgba(10,46,58,0.08), 0 1px 2px rgba(10,46,58,0.05);
+  --shadow-md: 0 4px 12px rgba(10,46,58,0.10), 0 2px 4px rgba(10,46,58,0.06);
+  --shadow-lg: 0 10px 30px rgba(10,46,58,0.14), 0 4px 8px rgba(10,46,58,0.08);
+
+  --ease-smooth: 250ms cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); background: var(--neutral-50); color: var(--neutral-800); font-size: 13.5px; line-height: 1.55; }
+
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 220px;
+  background: var(--teal-800); z-index: 100;
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+.logo-lockup { display: flex; align-items: center; gap: 10px; }
+.logo-diamond {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  width: 26px; height: 26px; transform: rotate(45deg); flex-shrink: 0;
+}
+.logo-diamond div { border-radius: 2px; }
+.logo-wordmark { line-height: 1; }
+.logo-primary { font-family: var(--font-body); font-weight: 700; font-size: 15px; color: var(--white); letter-spacing: -0.3px; }
+.logo-primary span { color: var(--teal-400); }
+.logo-sub { font-size: 8.5px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-top: 2px; }
+.logo-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.12); margin: 0 2px; }
+.logo-project { font-size: 11px; color: rgba(255,255,255,0.55); font-weight: 500; }
+.logo-project span { font-size: 8px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--teal-400); display: block; margin-top: 1px; }
+
+.sidebar-section {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.8px;
+  text-transform: uppercase; color: rgba(255,255,255,0.28);
+  padding: 18px 18px 6px;
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 18px; font-size: 12.5px; font-weight: 500;
+  color: rgba(255,255,255,0.60); text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: all 150ms ease;
+}
+.sidebar-nav li a:hover { color: var(--white); background: rgba(255,255,255,0.06); border-left-color: var(--teal-400); }
+.sidebar-nav li a.active { color: var(--white); background: rgba(26,189,212,0.12); border-left-color: var(--teal-400); font-weight: 600; }
+.sidebar-nav .nav-icon { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+.sidebar-nav li a.active .nav-icon { opacity: 1; }
+.sidebar-footer {
+  margin-top: auto; padding: 14px 18px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 10.5px; color: rgba(255,255,255,0.28);
+}
+.sidebar-footer strong { color: rgba(255,255,255,0.45); display: block; margin-bottom: 2px; }
+
+/* ── TOPBAR ───────────────────────────────────────────────── */
+.topbar {
+  position: fixed; top: 0; left: 220px; right: 0; height: 54px;
+  background: var(--white); border-bottom: 1px solid var(--neutral-200);
+  display: flex; align-items: center; padding: 0 28px; gap: 14px;
+  z-index: 90; box-shadow: var(--shadow-sm);
+}
+.topbar-breadcrumb { display: flex; align-items: center; gap: 7px; flex: 1; font-size: 12.5px; color: var(--neutral-500); }
+.topbar-breadcrumb .sep { color: var(--neutral-300); }
+.topbar-breadcrumb .current { color: var(--neutral-800); font-weight: 600; }
+.topbar-meta { display: flex; align-items: center; gap: 18px; font-size: 12px; color: var(--neutral-500); }
+.sync-indicator { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--status-green); font-weight: 500; }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--status-green); animation: pulse-dot 2s infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.35} }
+.topbar-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--teal-700); display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; color: var(--white); }
+
+/* ── MAIN CONTENT ─────────────────────────────────────────── */
+.main { margin-left: 220px; padding-top: 54px; min-height: 100vh; }
+.page-content { padding: 28px 28px 60px; }
+
+/* ── PAGE HEADER ──────────────────────────────────────────── */
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+.page-eyebrow { font-size: 9.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--teal-500); margin-bottom: 4px; }
+.page-title { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--teal-800); letter-spacing: 0.3px; line-height: 1.1; }
+.page-subtitle { font-size: 13px; color: var(--neutral-500); margin-top: 4px; }
+.page-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; transition: var(--ease-smooth); text-decoration: none; }
+.btn-primary { background: var(--teal-700); color: var(--white); }
+.btn-primary:hover { background: var(--teal-800); }
+.btn-secondary { background: var(--white); color: var(--teal-700); border: 1.5px solid var(--neutral-300); }
+.btn-secondary:hover { border-color: var(--teal-400); color: var(--teal-600); background: var(--teal-50); }
+.btn-ghost { background: transparent; color: var(--neutral-600); border: 1.5px solid var(--neutral-200); }
+.btn-ghost:hover { background: var(--neutral-100); color: var(--neutral-800); }
+
+/* ── KPI TILES ────────────────────────────────────────────── */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+.kpi-tile {
+  background: var(--white); border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-lg); padding: 16px 18px;
+  position: relative; overflow: hidden; box-shadow: var(--shadow-sm);
+  transition: var(--ease-smooth);
+}
+.kpi-tile:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.kpi-tile::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.kpi-tile.teal::before  { background: var(--teal-500); }
+.kpi-tile.gold::before  { background: var(--gold-500); }
+.kpi-tile.green::before { background: var(--status-green); }
+.kpi-tile.red::before   { background: var(--status-red); }
+.kpi-label { font-size: 9.5px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: var(--neutral-500); margin-bottom: 6px; }
+.kpi-value { font-family: var(--font-display); font-size: 36px; font-weight: 700; line-height: 1; color: var(--teal-800); letter-spacing: -0.5px; }
+.kpi-unit { font-size: 16px; font-weight: 500; color: var(--neutral-400); margin-left: 1px; }
+.kpi-sub { font-size: 11.5px; color: var(--neutral-500); margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+.kpi-delta { font-size: 10.5px; font-weight: 700; padding: 1px 6px; border-radius: var(--radius-sm); }
+.delta-up   { background: var(--status-green-bg); color: var(--status-green); }
+.delta-down { background: var(--status-red-bg);   color: var(--status-red); }
+.delta-flat { background: var(--status-grey-bg);  color: var(--neutral-600); }
+
+/* ── GANTT MODULE CONTAINER ───────────────────────────────── */
+.gantt-module {
+  background: var(--white); border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+/* ── GANTT TOOLBAR ────────────────────────────────────────── */
+.gantt-toolbar {
+  background: var(--teal-900); padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.toolbar-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-right: 2px; }
+.toolbar-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.15); margin: 0 4px; }
+.g-btn {
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.75);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-sm);
+  padding: 4px 10px; font-size: 11.5px; font-weight: 600;
+  cursor: pointer; font-family: var(--font-body);
+  transition: all 150ms ease;
+}
+.g-btn:hover { background: rgba(255,255,255,0.15); color: var(--white); }
+.g-btn.active { background: var(--teal-600); border-color: var(--teal-400); color: var(--white); }
+.g-btn.accent { background: rgba(232,104,26,0.25); border-color: rgba(245,168,35,0.4); color: var(--gold-300); }
+.g-btn.accent:hover { background: rgba(232,104,26,0.4); }
+.g-select {
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.75);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-sm);
+  padding: 4px 10px; font-size: 11.5px; font-family: var(--font-body);
+  font-weight: 500; cursor: pointer; outline: none;
+}
+.g-select option { background: var(--teal-800); color: var(--white); }
+.toolbar-spacer { flex: 1; }
+.toolbar-sync { font-size: 10.5px; color: rgba(255,255,255,0.35); }
+
+/* ── GANTT LAYOUT ─────────────────────────────────────────── */
+.gantt-body { display: flex; height: 520px; overflow: hidden; position: relative; }
+
+/* Left task panel */
+.gantt-left {
+  width: 340px; flex-shrink: 0;
+  border-right: 2px solid var(--neutral-200);
+  display: flex; flex-direction: column;
+  background: var(--white); z-index: 10;
+}
+.gantt-left-header {
+  display: grid; grid-template-columns: 52px 1fr 50px 68px;
+  background: var(--teal-700); color: rgba(255,255,255,0.85);
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; flex-shrink: 0;
+}
+.gantt-left-header > div { padding: 8px 7px; border-right: 1px solid rgba(255,255,255,0.12); }
+.gantt-left-header > div:last-child { border-right: none; }
+.task-scroll { flex: 1; overflow-y: hidden; }
+
+/* Task rows */
+.g-row {
+  display: grid; grid-template-columns: 52px 1fr 50px 68px;
+  border-bottom: 1px solid var(--neutral-100);
+  min-height: 36px; align-items: center;
+  font-size: 12.5px; cursor: default;
+  transition: background 100ms;
+}
+.g-row:hover { background: var(--teal-50); }
+.g-row.group { background: #EBF2F4; font-weight: 700; min-height: 40px; }
+.g-row.group:hover { background: #DDE8EC; }
+.g-row.milestone { background: #FFFBF0; }
+.g-row.milestone:hover { background: #FFF3D4; }
+.g-row.critical-row > .task-name-cell { border-left: 2px solid var(--status-red); }
+.g-row > div { padding: 0 7px; overflow: hidden; }
+.wbs-cell { font-family: var(--font-mono); font-size: 10.5px; color: var(--neutral-500); white-space: nowrap; }
+.task-name-cell { display: flex; align-items: center; gap: 5px; }
+.task-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.expand-btn { font-size: 9px; color: var(--teal-500); cursor: pointer; flex-shrink: 0; user-select: none; width: 14px; text-align: center; }
+.pct-cell { font-family: var(--font-mono); font-size: 11px; text-align: center; color: var(--neutral-600); }
+.party-cell { text-align: center; }
+.party-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 2px 6px; border-radius: var(--radius-pill);
+}
+.party-ep       { background: var(--teal-100); color: var(--teal-700); }
+.party-cc       { background: var(--gold-100); color: var(--gold-700); }
+.party-pmc      { background: #EDE9FF; color: #4A1D96; }
+.party-employer { background: var(--neutral-100); color: var(--neutral-700); }
+
+/* Right chart area */
+.gantt-right {
+  flex: 1; overflow: auto; position: relative;
+  display: flex; flex-direction: column;
+}
+
+/* Timeline header (sticky) */
+.gantt-timeline-header {
+  flex-shrink: 0; position: sticky; top: 0; z-index: 20;
+  background: var(--white);
+}
+.year-row {
+  display: flex; background: var(--teal-800);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.year-cell {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.7);
+  text-align: center; padding: 3px 6px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+.month-row { display: flex; background: var(--neutral-100); border-bottom: 2px solid var(--neutral-200); }
+.month-cell {
+  font-size: 10px; font-weight: 700; color: var(--neutral-600);
+  text-align: center; padding: 5px 3px; flex-shrink: 0;
+  border-right: 1px solid var(--neutral-200);
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
+.month-cell.wet { background: #DDEEFF; color: #1A4A8A; }
+.month-cell.today-month { background: rgba(245,168,35,0.15); color: var(--gold-600); }
+
+/* Chart rows area */
+.gantt-chart-rows { position: relative; flex: 1; }
+
+/* Bar rows */
+.g-bar-row {
+  position: relative; display: flex;
+  min-height: 36px; border-bottom: 1px solid var(--neutral-100);
+  align-items: center;
+}
+.g-bar-row:hover { background: rgba(26,142,168,0.03); }
+.g-bar-row.group { min-height: 40px; background: rgba(10,46,58,0.02); }
+.g-bar-row.milestone { min-height: 36px; background: rgba(245,168,35,0.03); }
+
+/* Grid lines */
+.grid-col { position: absolute; top: 0; bottom: 0; border-right: 1px dashed var(--neutral-200); pointer-events: none; }
+.grid-col.wet-fill { background: rgba(59,130,246,0.04); border: none; }
+.grid-col.month-bound { border-right-color: var(--neutral-300); border-right-style: solid; }
+
+/* Today line */
+.today-line {
+  position: absolute; top: 0; bottom: 0; width: 2px;
+  background: var(--gold-500); z-index: 15; pointer-events: none;
+}
+.today-label {
+  position: absolute; top: 0; background: var(--gold-500);
+  color: var(--white); font-size: 9px; font-weight: 700;
+  padding: 2px 5px; border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  transform: translateX(-50%); white-space: nowrap;
+}
+
+/* Bars */
+.bar-baseline {
+  position: absolute; height: 8px; border-radius: 2px;
+  background: var(--neutral-300); top: 8px; opacity: 0.65;
+}
+.bar-actual {
+  position: absolute; height: 14px; border-radius: 3px;
+  top: 50%; transform: translateY(-50%);
+}
+.bar-pct-fill {
+  position: absolute; top: 0; left: 0; height: 100%;
+  border-radius: 3px; opacity: 0.35; background: var(--white);
+}
+
+.bar-done     { background: linear-gradient(90deg, #1A7A44, var(--status-green)); }
+.bar-on-track { background: linear-gradient(90deg, var(--teal-600), var(--teal-400)); }
+.bar-at-risk  { background: linear-gradient(90deg, #C07000, var(--status-amber)); }
+.bar-delayed  { background: linear-gradient(90deg, #A82020, var(--status-red)); }
+.bar-forecast { background: transparent; border: 2px dashed var(--status-blue); border-radius: 3px; background-image: repeating-linear-gradient(90deg,rgba(43,127,200,0.12) 0px,rgba(43,127,200,0.12) 5px,transparent 5px,transparent 10px); }
+.bar-group    { background: linear-gradient(90deg, var(--teal-700), var(--teal-500)); opacity: 0.7; border-radius: 2px; }
+
+/* Progress overlay (% complete stripe) */
+.bar-actual .bar-pct-fill { background: rgba(255,255,255,0.25); pointer-events: none; }
+
+/* Milestone diamond */
+.milestone-diamond {
+  position: absolute; width: 13px; height: 13px;
+  transform: rotate(45deg);
+  top: 50%; margin-top: -6px; z-index: 5;
+  border: 2px solid rgba(0,0,0,0.3);
+}
+.diamond-done     { background: var(--status-green); border-color: #0D5C2E; }
+.diamond-pending  { background: var(--gold-400);     border-color: #8B4A00; }
+.diamond-critical { background: var(--status-red);   border-color: #7A0B0B; }
+
+/* ── LEGEND ───────────────────────────────────────────────── */
+.gantt-legend {
+  display: flex; gap: 20px; padding: 10px 16px;
+  border-top: 1px solid var(--neutral-200);
+  background: var(--neutral-50); flex-wrap: wrap; align-items: center;
+}
+.legend-group { display: flex; align-items: center; gap: 14px; }
+.legend-item  { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--neutral-600); }
+.legend-bar   { height: 9px; width: 26px; border-radius: 2px; }
+.legend-base  { height: 6px; width: 26px; border-radius: 2px; background: var(--neutral-300); opacity: 0.65; }
+.legend-diamond { width: 10px; height: 10px; transform: rotate(45deg); background: var(--gold-400); border: 1.5px solid #8B4A00; flex-shrink: 0; }
+.legend-today-line { width: 3px; height: 16px; background: var(--gold-500); border-radius: 1px; }
+.legend-wet-band { width: 20px; height: 14px; background: rgba(59,130,246,0.08); border: 1px dashed rgba(59,130,246,0.35); border-radius: 2px; }
+.legend-sep { width: 1px; height: 16px; background: var(--neutral-200); }
+
+/* ── STATUS CHIP (filter bar) ─────────────────────────────── */
+.filter-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 16px; background: var(--neutral-100);
+  border-bottom: 1px solid var(--neutral-200); flex-wrap: wrap;
+}
+.filter-label { font-size: 10.5px; font-weight: 700; color: var(--neutral-500); letter-spacing: 0.5px; text-transform: uppercase; }
+.filter-select {
+  background: var(--white); color: var(--neutral-700);
+  border: 1.5px solid var(--neutral-300); border-radius: var(--radius-md);
+  padding: 4px 10px; font-size: 12px; font-family: var(--font-body);
+  cursor: pointer; outline: none;
+}
+.filter-select:focus { border-color: var(--teal-400); }
+.filter-spacer { flex: 1; }
+.critical-toggle {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 600; color: var(--neutral-600);
+  cursor: pointer; user-select: none;
+}
+.critical-toggle input { accent-color: var(--status-red); }
+.critical-toggle.active { color: var(--status-red); }
+
+/* ── MINI PROGRESS BARS (in task rows) ───────────────────── */
+.pct-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.pct-bar-track { width: 36px; height: 4px; background: var(--neutral-200); border-radius: var(--radius-pill); overflow: hidden; }
+.pct-bar-fill  { height: 100%; border-radius: var(--radius-pill); }
+.pct-bar-fill.done     { background: var(--status-green); }
+.pct-bar-fill.on-track { background: var(--teal-500); }
+.pct-bar-fill.at-risk  { background: var(--status-amber); }
+.pct-bar-fill.delayed  { background: var(--status-red); }
+.pct-bar-fill.forecast { background: var(--status-blue); }
+
+/* ── TOOLTIP ──────────────────────────────────────────────── */
+.g-tooltip {
+  position: fixed; z-index: 200; pointer-events: none;
+  background: var(--teal-900); color: var(--white);
+  border-radius: var(--radius-md); padding: 10px 13px;
+  font-size: 12px; line-height: 1.5; box-shadow: var(--shadow-lg);
+  max-width: 260px; display: none;
+}
+.g-tooltip .tip-title { font-weight: 700; color: var(--teal-400); margin-bottom: 4px; font-size: 12.5px; }
+.g-tooltip .tip-row { display: flex; justify-content: space-between; gap: 16px; color: rgba(255,255,255,0.7); }
+.g-tooltip .tip-val { color: var(--white); font-weight: 600; }
+.g-tooltip .tip-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 5px 0; }
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-lockup">
+      <div class="logo-diamond">
+        <div style="background:var(--facet-blue)"></div>
+        <div style="background:var(--facet-green)"></div>
+        <div style="background:var(--gold-500)"></div>
+        <div style="background:var(--facet-orange)"></div>
+      </div>
+      <div class="logo-wordmark">
+        <div class="logo-primary">Alam<span>Tri</span></div>
+        <div class="logo-sub">Resources Indonesia</div>
+      </div>
+      <div class="logo-divider"></div>
+      <div>
+        <div class="logo-project">PT Maruwai Coal<span>CHPP2 Project</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">Overview</div>
+  <ul class="sidebar-nav">
+    <li><a href="#"><span class="nav-icon">🏠</span> Home / Summary</a></li>
+  </ul>
+
+  <div class="sidebar-section">Schedule</div>
+  <ul class="sidebar-nav">
+    <li><a href="#"><span class="nav-icon">📈</span> M01 — S-Curve Progress</a></li>
+    <li><a href="#"><span class="nav-icon">🏁</span> M02 — Milestones</a></li>
+    <li><a href="#" class="active"><span class="nav-icon">📅</span> M13 — Gantt Chart</a></li>
+  </ul>
+
+  <div class="sidebar-section">Commercial</div>
+  <ul class="sidebar-nav">
+    <li><a href="#"><span class="nav-icon">🏢</span> M03 — Employer Procurement</a></li>
+    <li><a href="#"><span class="nav-icon">🔧</span> M05 — EP Procurement</a></li>
+    <li><a href="#"><span class="nav-icon">🔄</span> M07 — Variation Orders</a></li>
+    <li><a href="#"><span class="nav-icon">💰</span> M08 — Payment Certs</a></li>
+  </ul>
+
+  <div class="sidebar-section">Controls</div>
+  <ul class="sidebar-nav">
+    <li><a href="#"><span class="nav-icon">📂</span> M04 — Document Register</a></li>
+    <li><a href="#"><span class="nav-icon">⚠️</span> M06 — Risk & Issues</a></li>
+    <li><a href="#"><span class="nav-icon">📋</span> M14 — Issue Register</a></li>
+  </ul>
+
+  <div class="sidebar-section">Site</div>
+  <ul class="sidebar-nav">
+    <li><a href="#"><span class="nav-icon">🛡️</span> M09 — HSE Performance</a></li>
+    <li><a href="#"><span class="nav-icon">🚢</span> M10 — Logistics</a></li>
+    <li><a href="#"><span class="nav-icon">✅</span> M11 — Quality / NCR</a></li>
+    <li><a href="#"><span class="nav-icon">👷</span> M12 — Manpower</a></li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <strong>Data as at: 03 Mar 2026</strong>
+    Rev A — Weekly Update
+  </div>
+</nav>
+
+<!-- ═══ TOPBAR ═════════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="topbar-breadcrumb">
+    <span>CHPP2 Dashboard</span>
+    <span class="sep">›</span>
+    <span>Schedule</span>
+    <span class="sep">›</span>
+    <span class="current">Module 13 — Gantt Chart</span>
+  </div>
+  <div class="topbar-meta">
+    <span>Week 09 / 2026</span>
+    <div class="sync-indicator">
+      <div class="sync-dot"></div>
+      Synced 08:00 WIB
+    </div>
+    <div class="topbar-avatar">PMC</div>
+  </div>
+</header>
+
+<!-- ═══ MAIN CONTENT ═══════════════════════════════════════ -->
+<main class="main">
+<div class="page-content">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Module 13 · GANTT_Schedule_Master</div>
+      <div class="page-title">Baseline vs Actual Schedule</div>
+      <div class="page-subtitle">PT Maruwai Coal — CHPP2 EPC · Lampunut Mine, Central Kalimantan · USD 89.2M</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-ghost" onclick="exportPNG()">⬇ PNG</button>
+      <button class="btn btn-secondary" onclick="exportPDF()">📄 Export PDF A3</button>
+      <button class="btn btn-primary">↻ Refresh Data</button>
+    </div>
+  </div>
+
+  <!-- KPI Tiles -->
+  <div class="kpi-row">
+    <div class="kpi-tile teal">
+      <div class="kpi-label">Overall Progress</div>
+      <div class="kpi-value">38<span class="kpi-unit">%</span></div>
+      <div class="kpi-sub">
+        <span class="kpi-delta delta-down">−4% vs Plan</span>
+        <span>Planned: 42%</span>
+      </div>
+    </div>
+    <div class="kpi-tile gold">
+      <div class="kpi-label">Schedule Performance Index</div>
+      <div class="kpi-value">0.91</div>
+      <div class="kpi-sub">
+        <span class="kpi-delta delta-down">At Risk</span>
+        <span>SPI &lt; 1.0</span>
+      </div>
+    </div>
+    <div class="kpi-tile red">
+      <div class="kpi-label">Schedule Delay</div>
+      <div class="kpi-value">+47<span class="kpi-unit">d</span></div>
+      <div class="kpi-sub">
+        <span class="kpi-delta delta-down">Critical Path</span>
+        <span>Construction phase</span>
+      </div>
+    </div>
+    <div class="kpi-tile green">
+      <div class="kpi-label">Milestones Achieved</div>
+      <div class="kpi-value">5<span class="kpi-unit">/10</span></div>
+      <div class="kpi-sub">
+        <span class="kpi-delta delta-flat">2 At Risk</span>
+        <span>3 pending</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gantt Module -->
+  <div class="gantt-module" id="ganttModule">
+
+    <!-- Toolbar -->
+    <div class="gantt-toolbar">
+      <span class="toolbar-label">View</span>
+      <button class="g-btn" onclick="setScale('weekly')" id="btn-weekly">Weekly</button>
+      <button class="g-btn active" onclick="setScale('monthly')" id="btn-monthly">Monthly</button>
+      <button class="g-btn" onclick="setScale('quarterly')" id="btn-quarterly">Quarterly</button>
+
+      <div class="toolbar-sep"></div>
+      <span class="toolbar-label">Baseline</span>
+      <button class="g-btn accent" id="btn-baseline-a">📸 Rev A (Jan 2025)</button>
+
+      <div class="toolbar-sep"></div>
+      <span class="toolbar-label">Export</span>
+      <button class="g-btn" onclick="exportPDF()">📄 PDF A3</button>
+      <button class="g-btn" onclick="exportPNG()">⬇ PNG</button>
+
+      <div class="toolbar-spacer"></div>
+      <span class="toolbar-sync">Last sync: 03 Mar 2026, 08:00 WIB</span>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <span class="filter-label">Filter</span>
+      <select class="filter-select" id="filter-party" onchange="applyFilters()">
+        <option value="">All Parties</option>
+        <option value="EP">EP Contractor</option>
+        <option value="CC">Construction Contractor</option>
+        <option value="PMC">PMC / EE</option>
+        <option value="Employer">Employer</option>
+      </select>
+      <select class="filter-select" id="filter-phase" onchange="applyFilters()">
+        <option value="">All Phases</option>
+        <option value="Engineering">Engineering</option>
+        <option value="Procurement">Procurement</option>
+        <option value="Construction">Construction</option>
+        <option value="Pre-Comm">Pre-Commissioning</option>
+        <option value="Commissioning">Commissioning</option>
+      </select>
+      <select class="filter-select" id="filter-status" onchange="applyFilters()">
+        <option value="">All Status</option>
+        <option value="done">Completed</option>
+        <option value="on-track">On Track</option>
+        <option value="at-risk">At Risk</option>
+        <option value="delayed">Delayed</option>
+        <option value="forecast">Forecast</option>
+        <option value="critical">Critical</option>
+      </select>
+      <select class="filter-select" id="filter-disc" onchange="applyFilters()">
+        <option value="">All Disciplines</option>
+        <option value="Civil">Civil</option>
+        <option value="Structural">Structural</option>
+        <option value="Mechanical">Mechanical</option>
+        <option value="E&I">Electrical & Instrumentation</option>
+        <option value="Logistics">Logistics</option>
+        <option value="Multi">Multi-discipline</option>
+      </select>
+      <div class="filter-spacer"></div>
+      <label class="critical-toggle" id="criticalToggle">
+        <input type="checkbox" id="criticalCheck" onchange="applyFilters()">
+        Critical Path Only
+      </label>
+      <button class="btn btn-ghost" style="font-size:11.5px;padding:5px 10px;" onclick="resetFilters()">✕ Clear</button>
+    </div>
+
+    <!-- Gantt Body -->
+    <div class="gantt-body" id="ganttBody">
+
+      <!-- Left panel: task names -->
+      <div class="gantt-left" id="ganttLeft">
+        <div class="gantt-left-header">
+          <div>WBS</div>
+          <div>Activity / Milestone</div>
+          <div style="text-align:center">%</div>
+          <div style="text-align:center">Party</div>
+        </div>
+        <div class="task-scroll" id="taskScroll">
+          <div id="taskRows"></div>
+        </div>
+      </div>
+
+      <!-- Right panel: timeline + bars -->
+      <div class="gantt-right" id="ganttRight">
+        <div class="gantt-timeline-header" id="timelineHeader"></div>
+        <div class="gantt-chart-rows" id="chartRows"></div>
+      </div>
+
+    </div><!-- /gantt-body -->
+
+    <!-- Legend -->
+    <div class="gantt-legend">
+      <div class="legend-group">
+        <div class="legend-item"><div class="legend-base"></div><span>Baseline</span></div>
+        <div class="legend-item"><div class="legend-bar" style="background:linear-gradient(90deg,#1A7A44,var(--status-green))"></div><span>Completed</span></div>
+        <div class="legend-item"><div class="legend-bar" style="background:linear-gradient(90deg,var(--teal-600),var(--teal-400))"></div><span>On Track</span></div>
+        <div class="legend-item"><div class="legend-bar" style="background:linear-gradient(90deg,#C07000,var(--status-amber))"></div><span>At Risk</span></div>
+        <div class="legend-item"><div class="legend-bar" style="background:linear-gradient(90deg,#A82020,var(--status-red))"></div><span>Delayed</span></div>
+        <div class="legend-item"><div class="legend-bar" style="border:2px dashed var(--status-blue);background:transparent;height:9px;"></div><span>Forecast</span></div>
+      </div>
+      <div class="legend-sep"></div>
+      <div class="legend-group">
+        <div class="legend-item"><div class="legend-diamond"></div><span>Milestone</span></div>
+        <div class="legend-item"><div class="legend-diamond" style="background:var(--status-green);border-color:#0D5C2E;"></div><span>Achieved</span></div>
+        <div class="legend-item"><div class="legend-diamond" style="background:var(--status-red);border-color:#7A0B0B;"></div><span>Critical</span></div>
+      </div>
+      <div class="legend-sep"></div>
+      <div class="legend-group">
+        <div class="legend-item"><div class="legend-today-line"></div><span>Today (03 Mar 2026)</span></div>
+        <div class="legend-item"><div class="legend-wet-band"></div><span>Wet Season (Dec–Feb)</span></div>
+      </div>
+    </div>
+
+  </div><!-- /gantt-module -->
+
+</div><!-- /page-content -->
+</main>
+
+<!-- Tooltip -->
+<div class="g-tooltip" id="tooltip"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════ -->
+<script>
+/* ── CONFIG ───────────────────────────────────────────── */
+const PROJECT_START = new Date('2025-01-01');
+const PROJECT_END   = new Date('2027-07-01');
+const TODAY         = new Date('2026-03-03');
+const TOTAL_DAYS    = (PROJECT_END - PROJECT_START) / 86400000;
+
+const MONTH_WIDTHS  = { weekly: 180, monthly: 58, quarterly: 36 };
+let currentScale    = 'monthly';
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* ── TASK DATA ────────────────────────────────────────── */
+const TASKS = [
+  // 1.0 Engineering & Design
+  { id:'1.0',  level:1, type:'group',     name:'Engineering & Design',              bS:'2025-01-06', bE:'2025-10-31', aS:'2025-01-06', aE:'2025-11-30', pct:72,  party:'EP',       disc:'Multi',      phase:'Engineering',  status:'on-track', crit:false, collapsed:false },
+  { id:'1.1',  level:2, type:'task',      name:'Basic Engineering (FEED)',           bS:'2025-01-06', bE:'2025-04-30', aS:'2025-01-06', aE:'2025-05-20', pct:100, party:'EP',       disc:'Multi',      phase:'Engineering',  status:'done',     crit:false },
+  { id:'1.2',  level:2, type:'task',      name:'Detailed Engineering — Civil',       bS:'2025-03-01', bE:'2025-08-31', aS:'2025-03-05', aE:'2025-09-30', pct:85,  party:'EP',       disc:'Civil',      phase:'Engineering',  status:'on-track', crit:false },
+  { id:'1.3',  level:2, type:'task',      name:'Detailed Engineering — Mechanical',  bS:'2025-04-01', bE:'2025-09-30', aS:'2025-04-08', aE:'2025-11-15', pct:68,  party:'EP',       disc:'Mechanical', phase:'Engineering',  status:'at-risk',  crit:true  },
+  { id:'1.4',  level:2, type:'task',      name:'Detailed Engineering — E&I',         bS:'2025-05-01', bE:'2025-10-31', aS:'2025-05-10', aE:'2025-12-31', pct:55,  party:'EP',       disc:'E&I',        phase:'Engineering',  status:'delayed',  crit:true  },
+  { id:'M1.1', level:2, type:'milestone', name:'IFC Drawings Issued (Civil)',         bS:'2025-08-31', bE:'2025-08-31', aS:'2025-09-15', aE:'2025-09-15', pct:100, party:'EP',       disc:'Civil',      phase:'Engineering',  status:'done',     crit:false },
+
+  // 2.0 Procurement
+  { id:'2.0',  level:1, type:'group',     name:'Procurement',                        bS:'2025-02-01', bE:'2026-04-30', aS:'2025-02-01', aE:'2026-07-31', pct:58,  party:'EP',       disc:'Multi',      phase:'Procurement',  status:'at-risk',  crit:true,  collapsed:false },
+  { id:'2.1',  level:2, type:'task',      name:'Major Equipment — PO Placement',     bS:'2025-02-01', bE:'2025-07-31', aS:'2025-02-15', aE:'2025-08-31', pct:100, party:'EP',       disc:'Mechanical', phase:'Procurement',  status:'done',     crit:false },
+  { id:'2.2',  level:2, type:'task',      name:'Bulk Materials & Structural Steel',  bS:'2025-04-01', bE:'2025-10-31', aS:'2025-04-15', aE:'2025-11-30', pct:65,  party:'EP',       disc:'Civil',      phase:'Procurement',  status:'on-track', crit:false },
+  { id:'2.3',  level:2, type:'task',      name:'Equipment Delivery to Site',         bS:'2025-08-01', bE:'2026-04-30', aS:'2025-09-01', aE:'2026-07-31', pct:35,  party:'EP',       disc:'Logistics',  phase:'Procurement',  status:'at-risk',  crit:true  },
+  { id:'M2.1', level:2, type:'milestone', name:'Last Major Equipment PO Placed',     bS:'2025-07-31', bE:'2025-07-31', aS:'2025-08-31', aE:'2025-08-31', pct:100, party:'EP',       disc:'Mechanical', phase:'Procurement',  status:'done',     crit:false },
+  { id:'M2.2', level:2, type:'milestone', name:'First Equipment on Site',            bS:'2025-10-15', bE:'2025-10-15', aS:'2025-12-01', aE:'2025-12-01', pct:100, party:'EP',       disc:'Logistics',  phase:'Procurement',  status:'done',     crit:true  },
+
+  // 3.0 Construction
+  { id:'3.0',  level:1, type:'group',     name:'Construction Works',                 bS:'2025-07-01', bE:'2026-12-31', aS:'2025-08-01', aE:'2027-02-28', pct:18,  party:'CC',       disc:'Multi',      phase:'Construction', status:'delayed',  crit:true,  collapsed:false },
+  { id:'3.1',  level:2, type:'task',      name:'Civil & Foundation Works',           bS:'2025-07-01', bE:'2026-02-28', aS:'2025-08-01', aE:'2026-05-31', pct:45,  party:'CC',       disc:'Civil',      phase:'Construction', status:'delayed',  crit:true  },
+  { id:'3.2',  level:2, type:'task',      name:'Structural Steel Erection',          bS:'2025-11-01', bE:'2026-06-30', aS:'2026-01-01', aE:'2026-09-30', pct:22,  party:'CC',       disc:'Structural', phase:'Construction', status:'delayed',  crit:true  },
+  { id:'3.3',  level:2, type:'task',      name:'Mechanical Equipment Installation',  bS:'2026-01-01', bE:'2026-09-30', aS:'2026-03-01', aE:'2026-12-31', pct:8,   party:'CC',       disc:'Mechanical', phase:'Construction', status:'delayed',  crit:true  },
+  { id:'3.4',  level:2, type:'task',      name:'Electrical & Instrumentation',       bS:'2026-03-01', bE:'2026-11-30', aS:'2026-05-01', aE:'2027-01-31', pct:3,   party:'CC',       disc:'E&I',        phase:'Construction', status:'at-risk',  crit:true  },
+  { id:'M3.1', level:2, type:'milestone', name:'First Concrete Pour (CHPP2A)',       bS:'2025-08-15', bE:'2025-08-15', aS:'2025-09-20', aE:'2025-09-20', pct:100, party:'CC',       disc:'Civil',      phase:'Construction', status:'done',     crit:false },
+  { id:'M3.2', level:2, type:'milestone', name:'Structural Steel Topping Out',       bS:'2026-06-30', bE:'2026-06-30', aS:'2026-09-30', aE:'2026-09-30', pct:0,   party:'CC',       disc:'Structural', phase:'Construction', status:'at-risk',  crit:true  },
+
+  // 4.0 Pre-commissioning
+  { id:'4.0',  level:1, type:'group',     name:'Pre-commissioning',                  bS:'2026-10-01', bE:'2027-01-31', aS:'2026-12-01', aE:'2027-03-31', pct:0,   party:'EP',       disc:'Multi',      phase:'Pre-Comm',     status:'forecast', crit:true,  collapsed:false },
+  { id:'4.1',  level:2, type:'task',      name:'Pre-comm Preparation & Flushing',   bS:'2026-10-01', bE:'2026-12-31', aS:'2026-12-01', aE:'2027-02-28', pct:0,   party:'EP',       disc:'Multi',      phase:'Pre-Comm',     status:'forecast', crit:true  },
+  { id:'4.2',  level:2, type:'task',      name:'Loop Checks & Functional Tests',    bS:'2026-12-01', bE:'2027-01-31', aS:'2027-02-01', aE:'2027-03-31', pct:0,   party:'EP',       disc:'E&I',        phase:'Pre-Comm',     status:'forecast', crit:true  },
+  { id:'M4.1', level:2, type:'milestone', name:'Ready for Commissioning',           bS:'2027-01-31', bE:'2027-01-31', aS:'2027-03-31', aE:'2027-03-31', pct:0,   party:'EP',       disc:'Multi',      phase:'Pre-Comm',     status:'critical', crit:true  },
+
+  // 5.0 Commissioning
+  { id:'5.0',  level:1, type:'group',     name:'Commissioning & Handover',           bS:'2027-01-01', bE:'2027-05-31', aS:'2027-03-01', aE:'2027-06-30', pct:0,   party:'EP',       disc:'Multi',      phase:'Commissioning',status:'forecast', crit:true,  collapsed:false },
+  { id:'5.1',  level:2, type:'task',      name:'Cold Commissioning — CHPP2A',       bS:'2027-01-01', bE:'2027-03-31', aS:'2027-03-01', aE:'2027-05-31', pct:0,   party:'EP',       disc:'Multi',      phase:'Commissioning',status:'forecast', crit:true  },
+  { id:'5.2',  level:2, type:'task',      name:'Hot Commissioning — CHPP2A',        bS:'2027-03-01', bE:'2027-05-15', aS:'2027-05-01', aE:'2027-06-30', pct:0,   party:'EP',       disc:'Multi',      phase:'Commissioning',status:'forecast', crit:true  },
+  { id:'M5.1', level:2, type:'milestone', name:'CHPP2A First Coal (CONTRACT DATE)', bS:'2027-05-15', bE:'2027-05-15', aS:'2027-06-30', aE:'2027-06-30', pct:0,   party:'Employer', disc:'Multi',      phase:'Commissioning',status:'critical', crit:true  },
+];
+
+/* parent/child lookup */
+function getParentId(task) {
+  const parts = task.id.split('.');
+  if (task.type === 'milestone') {
+    const prefix = task.id.match(/^[MmGg]?(\d+)/);
+    return prefix ? prefix[1] + '.0' : null;
+  }
+  if (parts.length === 1 || (parts.length === 2 && parts[1] === '0')) return null;
+  return parts[0] + '.0';
+}
+
+/* collapse state */
+const collapsed = {};
+TASKS.filter(t => t.type === 'group').forEach(t => { collapsed[t.id] = false; });
+
+/* ── DATE UTILITIES ───────────────────────────────────── */
+function dayOffset(dateStr) {
+  return (new Date(dateStr) - PROJECT_START) / 86400000;
+}
+function dateToX(dateStr) {
+  const mw = MONTH_WIDTHS[currentScale];
+  return dayOffset(dateStr) / TOTAL_DAYS * totalChartWidth();
+}
+function totalChartWidth() {
+  const months = monthsBetween(PROJECT_START, PROJECT_END);
+  return months * MONTH_WIDTHS[currentScale];
+}
+function monthsBetween(a, b) {
+  return (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+}
+function isWetSeason(month) { return month === 11 || month === 0 || month === 1; }
+
+/* ── VISIBLE TASKS ────────────────────────────────────── */
+function getVisibleTasks() {
+  const fParty  = document.getElementById('filter-party').value;
+  const fPhase  = document.getElementById('filter-phase').value;
+  const fStatus = document.getElementById('filter-status').value;
+  const fDisc   = document.getElementById('filter-disc').value;
+  const fCrit   = document.getElementById('criticalCheck').checked;
+
+  const result = [];
+  let skipUntilLevel = null;
+
+  for (const t of TASKS) {
+    // skip children of collapsed parent
+    if (skipUntilLevel !== null && t.level > skipUntilLevel) continue;
+    skipUntilLevel = null;
+
+    // check collapse
+    if (t.type === 'group' && collapsed[t.id]) {
+      skipUntilLevel = t.level;
+    }
+
+    // apply filters (only on leaf tasks/milestones; always show group rows that have visible children)
+    if (t.type !== 'group') {
+      if (fParty  && t.party  !== fParty)  continue;
+      if (fPhase  && t.phase  !== fPhase)  continue;
+      if (fStatus && t.status !== fStatus) continue;
+      if (fDisc   && t.disc   !== fDisc)   continue;
+      if (fCrit   && !t.crit)              continue;
+    }
+
+    result.push(t);
+  }
+  return result;
+}
+
+/* ── RENDER ───────────────────────────────────────────── */
+function render() {
+  renderTimelineHeader();
+  renderRows();
+  positionTodayLine();
+}
+
+function renderTimelineHeader() {
+  const hdr = document.getElementById('timelineHeader');
+  const cw  = totalChartWidth();
+  const mw  = MONTH_WIDTHS[currentScale];
+
+  // Group months into year blocks for year row
+  const months = [];
+  const d = new Date(PROJECT_START);
+  while (d < PROJECT_END) {
+    months.push({ year: d.getFullYear(), month: d.getMonth() });
+    d.setMonth(d.getMonth() + 1);
+  }
+
+  // Year row
+  const yearGroups = [];
+  months.forEach(m => {
+    const last = yearGroups[yearGroups.length - 1];
+    if (last && last.year === m.year) last.count++;
+    else yearGroups.push({ year: m.year, count: 1 });
+  });
+
+  let yearHtml = '<div class="year-row">';
+  yearGroups.forEach(g => {
+    yearHtml += `<div class="year-cell" style="width:${g.count * mw}px;flex-shrink:0">${g.year}</div>`;
+  });
+  yearHtml += '</div>';
+
+  // Month row + grid cols container
+  let monthHtml = '<div class="month-row">';
+  months.forEach(m => {
+    const isTodayMonth = (m.year === TODAY.getFullYear() && m.month === TODAY.getMonth());
+    const wet = isWetSeason(m.month);
+    const cls = wet ? 'month-cell wet' : isTodayMonth ? 'month-cell today-month' : 'month-cell';
+    const label = currentScale === 'weekly'    ? `${MONTHS[m.month]} ${m.year}` :
+                  currentScale === 'monthly'   ? MONTHS[m.month] :
+                                                 `Q${Math.floor(m.month/3)+1}`;
+    // In quarterly mode, only show label at quarter boundaries
+    if (currentScale === 'quarterly' && m.month % 3 !== 0) {
+      monthHtml += `<div class="${cls}" style="width:${mw}px;flex-shrink:0"></div>`;
+    } else {
+      monthHtml += `<div class="${cls}" style="width:${mw}px;flex-shrink:0">${label}</div>`;
+    }
+  });
+  monthHtml += '</div>';
+
+  hdr.innerHTML = yearHtml + monthHtml;
+}
+
+function renderRows() {
+  const tasks   = getVisibleTasks();
+  const cw      = totalChartWidth();
+  const mw      = MONTH_WIDTHS[currentScale];
+  const ROW_H   = { group: 40, task: 36, milestone: 36 };
+
+  // Build grid columns (one per month)
+  const months = [];
+  const d = new Date(PROJECT_START);
+  while (d < PROJECT_END) {
+    months.push({ year: d.getFullYear(), month: d.getMonth(), x: months.length * mw });
+    d.setMonth(d.getMonth() + 1);
+  }
+
+  // Grid background (wet season bands)
+  let gridHtml = '';
+  months.forEach(m => {
+    if (isWetSeason(m.month)) {
+      gridHtml += `<div class="grid-col wet-fill" style="left:${m.x}px;width:${mw}px"></div>`;
+    }
+    gridHtml += `<div class="grid-col" style="left:${m.x + mw}px"></div>`;
+  });
+
+  let taskRowsHtml  = '';
+  let chartRowsHtml = gridHtml;
+
+  tasks.forEach(t => {
+    const rh   = ROW_H[t.type] || 36;
+    const isCrit = t.crit;
+
+    /* ── LEFT PANEL ROW ── */
+    const indent = (t.level - 1) * 14;
+    const isGroup = t.type === 'group';
+    const rowClass = `g-row ${t.type} ${isCrit ? 'critical-row' : ''}`;
+
+    let expandBtn = '';
+    if (isGroup) {
+      expandBtn = `<span class="expand-btn" onclick="toggleCollapse('${t.id}')">${collapsed[t.id] ? '▶' : '▼'}</span>`;
+    } else if (t.type === 'milestone') {
+      expandBtn = '<span style="color:var(--gold-400);font-size:12px">◆</span>';
+    }
+
+    const partyClass = `party-badge party-${t.party.toLowerCase().replace('/','').replace(' ','')}`;
+
+    const pctDisplay = t.type === 'milestone'
+      ? (t.status === 'done' ? '<span style="color:var(--status-green)">✓</span>' : '<span style="color:var(--status-amber)">○</span>')
+      : `<div class="pct-bar-wrap">
+           <span style="font-size:10.5px;font-family:var(--font-mono)">${t.pct}%</span>
+           <div class="pct-bar-track"><div class="pct-bar-fill ${t.status}" style="width:${t.pct}%"></div></div>
+         </div>`;
+
+    taskRowsHtml += `
+      <div class="${rowClass}" style="height:${rh}px"
+           onmouseenter="showTooltip(event,'${t.id}')"
+           onmouseleave="hideTooltip()">
+        <div class="wbs-cell">${t.id}</div>
+        <div class="task-name-cell" style="padding-left:${indent + 7}px">
+          ${expandBtn}
+          <span class="task-name-text" title="${t.name}">${t.name}</span>
+        </div>
+        <div class="pct-cell">${pctDisplay}</div>
+        <div class="party-cell"><span class="${partyClass}">${t.party}</span></div>
+      </div>`;
+
+    /* ── CHART BAR ROW ── */
+    const barRowClass = `g-bar-row ${t.type}`;
+    let barsHtml = '';
+
+    if (t.type === 'milestone') {
+      // Baseline diamond
+      const bx = dateToX(t.bS) - 6;
+      // Actual diamond
+      const ax = dateToX(t.aS) - 6;
+      const dCls = t.status === 'done' ? 'diamond-done' : t.status === 'critical' ? 'diamond-critical' : 'diamond-pending';
+      barsHtml += `<div class="milestone-diamond" style="left:${bx}px;background:var(--neutral-300);border-color:var(--neutral-400);opacity:0.6" title="Baseline: ${t.bS}"></div>`;
+      barsHtml += `<div class="milestone-diamond ${dCls}" style="left:${ax}px" onmouseenter="showTooltip(event,'${t.id}')" onmouseleave="hideTooltip()"></div>`;
+    } else {
+      // Baseline bar
+      const bleft = dateToX(t.bS);
+      const bwidth = Math.max(dateToX(t.bE) - bleft, 4);
+      barsHtml += `<div class="bar-baseline" style="left:${bleft}px;width:${bwidth}px" title="Baseline: ${t.bS} → ${t.bE}"></div>`;
+
+      // Actual / forecast bar
+      const aleft  = dateToX(t.aS);
+      const awidth = Math.max(dateToX(t.aE) - aleft, 6);
+      const barCls = t.type === 'group' ? 'bar-group' : `bar-${t.status.replace('-','_')}`;
+      const pctFill = t.pct > 0 ? `<div class="bar-pct-fill" style="width:${100 - t.pct}%;margin-left:${t.pct}%;background:rgba(0,0,0,0.15)"></div>` : '';
+      barsHtml += `<div class="bar-actual ${barCls}" style="left:${aleft}px;width:${awidth}px"
+                       onmouseenter="showTooltip(event,'${t.id}')" onmouseleave="hideTooltip()">
+                     ${pctFill}
+                   </div>`;
+    }
+
+    chartRowsHtml += `
+      <div class="${barRowClass}" style="height:${rh}px;position:relative;overflow:visible">
+        <div style="position:absolute;top:0;left:0;right:0;bottom:0;overflow:visible">
+          ${barsHtml}
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('taskRows').innerHTML   = taskRowsHtml;
+  document.getElementById('chartRows').innerHTML  = chartRowsHtml;
+  document.getElementById('chartRows').style.width = cw + 'px';
+  document.getElementById('chartRows').style.position = 'relative';
+
+  // Inject today line into chartRows
+  const txPos = dateToX(TODAY.toISOString().substring(0,10));
+  const todayHtml = `
+    <div class="today-line" style="left:${txPos}px">
+      <div class="today-label">TODAY</div>
+    </div>`;
+  document.getElementById('chartRows').insertAdjacentHTML('beforeend', todayHtml);
+}
+
+function positionTodayLine() {} // handled inside renderRows
+
+/* ── COLLAPSE TOGGLE ──────────────────────────────────── */
+function toggleCollapse(id) {
+  collapsed[id] = !collapsed[id];
+  render();
+}
+
+/* ── SCALE ────────────────────────────────────────────── */
+function setScale(scale) {
+  currentScale = scale;
+  ['weekly','monthly','quarterly'].forEach(s => {
+    document.getElementById('btn-' + s).classList.toggle('active', s === scale);
+  });
+  render();
+}
+
+/* ── FILTERS ──────────────────────────────────────────── */
+function applyFilters() {
+  const crit = document.getElementById('criticalCheck').checked;
+  document.getElementById('criticalToggle').classList.toggle('active', crit);
+  render();
+}
+function resetFilters() {
+  ['filter-party','filter-phase','filter-status','filter-disc'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('criticalCheck').checked = false;
+  document.getElementById('criticalToggle').classList.remove('active');
+  render();
+}
+
+/* ── SCROLL SYNC ──────────────────────────────────────── */
+function initScrollSync() {
+  const rightPane  = document.getElementById('ganttRight');
+  const taskScroll = document.getElementById('taskScroll');
+  let syncLock = false;
+  rightPane.addEventListener('scroll', () => {
+    if (syncLock) return;
+    syncLock = true;
+    taskScroll.scrollTop = rightPane.scrollTop;
+    syncLock = false;
+  });
+  taskScroll.addEventListener('scroll', () => {
+    if (syncLock) return;
+    syncLock = true;
+    rightPane.scrollTop = taskScroll.scrollTop;
+    syncLock = false;
+  });
+}
+
+/* ── TOOLTIP ──────────────────────────────────────────── */
+function showTooltip(evt, taskId) {
+  const t = TASKS.find(x => x.id === taskId);
+  if (!t) return;
+  const tip  = document.getElementById('tooltip');
+  const statusLabels = { done:'Completed', 'on-track':'On Track', 'at-risk':'At Risk', delayed:'Delayed', forecast:'Forecast', critical:'Critical' };
+  const statusColors = { done:'var(--status-green)', 'on-track':'var(--teal-400)', 'at-risk':'var(--status-amber)', delayed:'var(--status-red)', forecast:'var(--status-blue)', critical:'var(--status-red)' };
+
+  tip.innerHTML = `
+    <div class="tip-title">${t.id} — ${t.name}</div>
+    <div class="tip-divider"></div>
+    <div class="tip-row"><span>Status</span><span class="tip-val" style="color:${statusColors[t.status] || '#fff'}">${statusLabels[t.status] || t.status}</span></div>
+    <div class="tip-row"><span>Progress</span><span class="tip-val">${t.pct}% complete</span></div>
+    <div class="tip-row"><span>Party</span><span class="tip-val">${t.party}</span></div>
+    <div class="tip-divider"></div>
+    <div class="tip-row"><span>Baseline Start</span><span class="tip-val">${t.bS}</span></div>
+    <div class="tip-row"><span>Baseline Finish</span><span class="tip-val">${t.bE}</span></div>
+    <div class="tip-row"><span>Actual/Fcst Start</span><span class="tip-val">${t.aS}</span></div>
+    <div class="tip-row"><span>Actual/Fcst Finish</span><span class="tip-val">${t.aE}</span></div>
+    ${t.crit ? '<div class="tip-divider"></div><div class="tip-row"><span style="color:var(--status-red)">⚠ Critical Path</span><span></span></div>' : ''}
+  `;
+  tip.style.display = 'block';
+  moveTip(evt);
+}
+function moveTip(evt) {
+  const tip = document.getElementById('tooltip');
+  const x = evt.clientX + 14;
+  const y = evt.clientY - 10;
+  const maxX = window.innerWidth  - tip.offsetWidth  - 10;
+  const maxY = window.innerHeight - tip.offsetHeight - 10;
+  tip.style.left = Math.min(x, maxX) + 'px';
+  tip.style.top  = Math.max(10, Math.min(y, maxY)) + 'px';
+}
+function hideTooltip() {
+  document.getElementById('tooltip').style.display = 'none';
+}
+document.addEventListener('mousemove', e => {
+  if (document.getElementById('tooltip').style.display === 'block') moveTip(e);
+});
+
+/* ── EXPORT STUBS ─────────────────────────────────────── */
+function exportPDF() { alert('PDF export: connects to print() or server-side renderer in production.'); }
+function exportPNG() { alert('PNG export: uses html2canvas in production.'); }
+
+/* ── INIT ─────────────────────────────────────────────── */
+render();
+initScrollSync();
+</script>
+</body>
+</html>
